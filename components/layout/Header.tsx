@@ -33,6 +33,8 @@ import {
   MapPin,
   ExternalLink,
   Users,
+  Database,
+  Code2,
   Lightbulb,
 } from 'lucide-react';
 
@@ -96,8 +98,15 @@ const MORE_HUBS = [
     ],
   },
   {
-    category: 'Intelligence & Research',
+    category: 'Intelligence & Open Data',
     items: [
+      {
+        href: '/data-catalog',
+        label: 'National Data Catalog',
+        desc: 'Official data.gov.in, Census 2011 & CPCB open feeds',
+        icon: Database,
+        color: 'text-emerald-600 bg-emerald-50',
+      },
       {
         href: '/intelligence/10x',
         label: '10x Intelligence Hub',
@@ -107,10 +116,17 @@ const MORE_HUBS = [
       },
       {
         href: '/research',
-        label: 'Research & Open Data',
-        desc: 'Open datasets, anonymized civic trends & API access',
+        label: 'Research Lab & APIs',
+        desc: 'Anonymized civic trends & differential privacy exports',
         icon: Microscope,
         color: 'text-cyan-600 bg-cyan-50',
+      },
+      {
+        href: '/about/technology',
+        label: 'Open-Source Stack',
+        desc: 'FOSS architecture, OSM, PostGIS & licenses',
+        icon: Code2,
+        color: 'text-blue-600 bg-blue-50',
       },
     ],
   },

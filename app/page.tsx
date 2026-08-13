@@ -9,6 +9,7 @@ import { BountyCard } from '@/components/cards/BountyCard';
 import { ContributorCard } from '@/components/cards/ContributorCard';
 import { InteractiveMap } from '@/components/map/InteractiveMap';
 import { TOP_CONTRIBUTORS } from '@/lib/mock-data';
+import { DataSourceBadge } from '@/components/ui/DataSourceBadge';
 import {
   Mic,
   PlusCircle,
@@ -26,6 +27,7 @@ import {
   FileCheck,
   Download,
   Smartphone,
+  Database,
 } from 'lucide-react';
 
 export default function HomePage() {
@@ -152,54 +154,83 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* LIVE PLATFORM METRICS COUNTER BAR */}
-          <div className="mt-12 pt-8 border-t border-slate-200 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-card">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-1">
-                Problems Reported
-              </span>
-              <div className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight font-mono">
-                1,284,531
+          {/* LIVE CIVIC INTELLIGENCE & PROVENANCE METRICS */}
+          <div className="mt-12 pt-8 border-t border-slate-200 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Database className="w-4 h-4 text-blue-600" />
+                <span className="text-xs font-black uppercase tracking-wider text-slate-900">
+                  Live Civic Intelligence &amp; Provenance
+                </span>
               </div>
-              <span className="inline-block mt-1 text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
-                ↑ +12.4% this month
-              </span>
+              <Link
+                href="/data-catalog"
+                className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1 self-start sm:self-auto"
+              >
+                <span>National Open Data Catalog &amp; Licenses →</span>
+              </Link>
             </div>
 
-            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-card">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-1">
-                Verified Problems
-              </span>
-              <div className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight font-mono">
-                432,891
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+              <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-card space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                    Citizen Reports
+                  </span>
+                  <DataSourceBadge sourceId="src_janvaani_citizen" size="sm" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight font-mono">
+                  12,642
+                </div>
+                <span className="text-[10px] text-slate-500 font-medium block">
+                  Geotagged &amp; verified by community
+                </span>
               </div>
-              <span className="inline-block mt-1 text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
-                ↑ +8.7% this month
-              </span>
-            </div>
 
-            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-card">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-1">
-                Solutions Submitted
-              </span>
-              <div className="text-2xl sm:text-3xl font-black text-purple-700 tracking-tight font-mono">
-                182,410
+              <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-card space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                    Census Districts
+                  </span>
+                  <DataSourceBadge sourceId="src_census_pca_2011" size="sm" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-black text-blue-600 tracking-tight font-mono">
+                  640
+                </div>
+                <span className="text-[10px] text-slate-500 font-medium block">
+                  100% All-India Demographic Baseline
+                </span>
               </div>
-              <span className="inline-block mt-1 text-[11px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-md">
-                ↑ +15.3% this month
-              </span>
-            </div>
 
-            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-card">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-1">
-                Problems Resolved
-              </span>
-              <div className="text-2xl sm:text-3xl font-black text-emerald-600 tracking-tight font-mono">
-                29,412
+              <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-card space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                    Air Quality Stations
+                  </span>
+                  <DataSourceBadge sourceId="src_cpcb_aqi" size="sm" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-black text-emerald-600 tracking-tight font-mono">
+                  428 CAAQMS
+                </div>
+                <span className="text-[10px] text-slate-500 font-medium block">
+                  CPCB Continuous Real-Time Feeds
+                </span>
               </div>
-              <span className="inline-block mt-1 text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
-                ↑ +18.1% this month
-              </span>
+
+              <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-card space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                    Verified Solved
+                  </span>
+                  <DataSourceBadge trustLevel="COMMUNITY_VERIFIED" size="sm" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-black text-purple-700 tracking-tight font-mono">
+                  8,155
+                </div>
+                <span className="text-[10px] text-slate-500 font-medium block">
+                  91.4% Citizen Proof Verified
+                </span>
+              </div>
             </div>
           </div>
         </div>
