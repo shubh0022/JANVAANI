@@ -19,7 +19,7 @@ import {
   INITIAL_BOUNTIES,
 } from './mock-data';
 
-export type LanguageCode = 'en' | 'hi' | 'gu' | 'ta' | 'mr' | 'bn' | 'te';
+export type LanguageCode = string;
 
 export interface NotificationItem {
   id: string;
@@ -117,8 +117,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  useEffect(() => {
+    try {
+      const savedLang = localStorage.getItem('jv_selected_lang');
+      if (savedLang) setLanguageState(savedLang);
+    } catch {
+      // ignore
+    }
+  }, []);
+
   const setLanguage = (lang: LanguageCode) => {
     setLanguageState(lang);
+    try {
+      localStorage.setItem('jv_selected_lang', lang);
+    } catch {
+      // ignore
+    }
   };
 
   const toggleCivicReaction = (problemId: string, reaction: CivicReactionType) => {
