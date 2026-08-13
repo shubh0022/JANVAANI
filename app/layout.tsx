@@ -5,6 +5,7 @@ import { AppProvider } from '@/lib/store';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { GlobalSearchModal } from '@/components/layout/GlobalSearchModal';
+import { CivicChatbotModal } from '@/components/ai/CivicChatbotModal';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -36,6 +37,7 @@ export default function RootLayout({
           <main className="flex-1 flex flex-col">{children}</main>
           <Footer />
           <GlobalSearchModal />
+          <CivicChatbotModal />
         </AppProvider>
       </body>
     </html>

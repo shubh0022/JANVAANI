@@ -36,6 +36,7 @@ import {
   Database,
   Code2,
   Lightbulb,
+  Bot,
 } from 'lucide-react';
 
 import { JanVaaniLogo } from '@/components/ui/JanVaaniLogo';
@@ -100,6 +101,13 @@ const MORE_HUBS = [
   {
     category: 'Intelligence & Open Data',
     items: [
+      {
+        href: '/ai-assistant',
+        label: 'JanVaani AI Saathi',
+        desc: 'Multilingual voice assistant, auto-drafting & policy Q&A',
+        icon: Bot,
+        color: 'text-indigo-600 bg-indigo-50',
+      },
       {
         href: '/data-catalog',
         label: 'National Data Catalog',
