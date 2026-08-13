@@ -2,10 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { useApp } from '@/lib/store';
 import { DataSourceBadge } from '@/components/ui/DataSourceBadge';
-import { ALL_REPRESENTATIVES } from '@/lib/political-directory';
-import { CIVIC_TAXONOMY } from '@/lib/taxonomy';
 import {
   Sparkles,
   Send,
@@ -14,20 +11,10 @@ import {
   X,
   Bot,
   User,
-  MessageSquare,
-  Building2,
   MapPin,
-  AlertTriangle,
-  CheckCircle2,
   ArrowRight,
-  RefreshCw,
-  Phone,
-  FileText,
-  ThumbsUp,
-  Volume2,
   Minimize2,
   Maximize2,
-  ChevronRight,
   ExternalLink,
 } from 'lucide-react';
 
@@ -45,11 +32,11 @@ interface ChatMessage {
 }
 
 const QUICK_PROMPTS = [
-  '📍 Report a dangerous pothole in Ward 7',
-  '🏛️ Who is my Ward Corporator & MLA in Vadodara?',
-  '🌬️ What is the live CPCB Air Quality (AQI)?',
-  '💰 How do I earn bounties for solving civic problems?',
-  '📜 Guide me on filing an online RTI for road repair funds',
+  '📍 Report a pothole in Ward 7',
+  '🏛️ Who is my MLA & Corporator?',
+  '🌬️ Live CPCB Air Quality (AQI)',
+  '💰 How do bounties work?',
+  '📜 File an online RTI',
 ];
 
 export function CivicChatbotModal() {
@@ -64,7 +51,7 @@ export function CivicChatbotModal() {
     {
       id: 'msg_welcome',
       sender: 'ai',
-      text: "Namaste! I am JanVaani Civic AI Saathi. I can help you report local problems in your mother tongue, look up your elected MLA/Corporator, check real-time open data (CPCB AQI, Census), or draft engineering solutions. How can I assist your neighborhood today?",
+      text: "Namaste! I am JanVaani AI Saathi. Report a problem in any Indian language, find your MLA/Corporator, check live CPCB air quality, or draft civic solutions.",
       timestamp: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
     },
   ]);
@@ -79,10 +66,10 @@ export function CivicChatbotModal() {
     }
   }, [messages, isOpen]);
 
-  // Handle Speech Recognition
+  // Speech Recognition (Multilingual)
   const handleToggleVoice = () => {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-      alert('Speech recognition is not supported in this browser. Please type your query.');
+      alert('Speech recognition not supported in this browser.');
       return;
     }
 
@@ -95,132 +82,101 @@ export function CivicChatbotModal() {
       const SpeechRecognition =
         (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
       const recognition = new SpeechRecognition();
-      recognition.lang = 'hi-IN'; // Indian multilingual recognition
+      recognition.lang = 'hi-IN';
       recognition.interimResults = false;
       recognition.maxAlternatives = 1;
 
-      recognition.onstart = () => {
-        setIsListening(true);
-      };
-
+      recognition.onstart = () => setIsListening(true);
       recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript;
-        setInputText(transcript);
+        setInputText(event.results[0][0].transcript);
         setIsListening(false);
       };
-
-      recognition.onerror = () => {
-        setIsListening(false);
-      };
-
-      recognition.onend = () => {
-        setIsListening(false);
-      };
-
+      recognition.onerror = () => setIsListening(false);
+      recognition.onend = () => setIsListening(false);
       recognition.start();
     } catch (e) {
       setIsListening(false);
     }
   };
 
-  // Generate Intelligent Contextual AI Civic Responses
   const generateAiResponse = (userQuery: string): ChatMessage => {
     const q = userQuery.toLowerCase();
 
-    // 1. Problem Reporting Intent
+    // Problem reporting intent
     if (
       q.includes('report') ||
       q.includes('pothole') ||
       q.includes('drainage') ||
       q.includes('garbage') ||
-      q.includes('street light') ||
+      q.includes('light') ||
       q.includes('pani') ||
-      q.includes('kharab') ||
-      q.includes('light')
+      q.includes('road')
     ) {
       return {
         id: `msg_${Date.now()}`,
         sender: 'ai',
-        text: `I have analyzed your civic report. Based on your description, I categorized this as **Infrastructure & Roads / Public Utilities** in **Ward 7 (Karelibaug)** with **High Priority (P1)**. I've prepared a pre-filled draft case ready for community confirmation!`,
+        text: `Identified as **Infrastructure / Utilities** in **Ward 7 (Karelibaug)** with **High Priority (P1)**. Draft ticket prepared:`,
         timestamp: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
         suggestedAction: {
           type: 'report_problem',
-          title: 'Review & Submit Draft Problem Case',
-          payload: {
-            title: 'Reported Issue in Ward 7',
-            category: 'infrastructure',
-            severity: 'high',
-          },
+          title: 'Review & Submit Problem Case',
         },
       };
     }
 
-    // 2. Representative / MLA / Corporator Query
+    // Representatives intent
     if (
       q.includes('mla') ||
       q.includes('corporator') ||
       q.includes('mp') ||
       q.includes('officer') ||
-      q.includes('contact') ||
-      q.includes('neta') ||
-      q.includes('ward')
+      q.includes('contact')
     ) {
       return {
         id: `msg_${Date.now()}`,
         sender: 'ai',
-        text: `Here is the verified 4-tier leadership chain for **Ward 7 (Karelibaug & VIP Road, Vadodara)** from our Open Data Radar:\n\n• **Corporator**: Shri Manoj Patel (BJP 🪷) — Tel: +91 98980 12345\n• **Ward Engineer**: Er. Rajesh K. Patel (VMC Engineering) — Tel: +91 265 248 1199\n• **MLA (Sayajigunj #141)**: Keyur Rokadiya — MLA-LAD Spent: ₹3.32 Cr (94.8%)\n• **MP (Vadodara #20)**: Dr. Hemang Joshi — MPLADS Utilized: ₹4.78 Cr (95.6%)`,
+        text: `**Ward 7 (Karelibaug) Leadership:**\n• **Corporator**: Manoj Patel (BJP) • +91 98980 12345\n• **Ward Engineer**: Er. Rajesh Patel • +91 265 248 1199\n• **MLA**: Keyur Rokadiya (Sayajigunj #141)\n• **MP**: Dr. Hemang Joshi (Vadodara #20)`,
         timestamp: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
         suggestedAction: {
           type: 'contact_representative',
-          title: 'Open Verified Representatives Directory',
+          title: 'Open Representatives Radar',
         },
       };
     }
 
-    // 3. CPCB Air Quality / Environment Query
-    if (q.includes('aqi') || q.includes('air') || q.includes('pollution') || q.includes('cpcb') || q.includes('hawa')) {
+    // AQI / Environment intent
+    if (q.includes('aqi') || q.includes('air') || q.includes('pollution') || q.includes('cpcb')) {
       return {
         id: `msg_${Date.now()}`,
         sender: 'ai',
-        text: `According to live telemetry from the **Central Pollution Control Board (CPCB) CAAQMS Station at Dandia Bazaar, Vadodara**:\n\n• **Current AQI**: 78 (Satisfactory 🟢)\n• **Primary Pollutant**: PM2.5 (24.2 µg/m³)\n• **National Average Benchmark**: 112 (Moderate 🟡)\n• **Freshness**: Synced today at official CPCB REST feed.`,
+        text: `**Live CPCB Telemetry (Vadodara Station):**\n• **Current AQI**: 78 (Satisfactory 🟢)\n• **PM2.5**: 24.2 µg/m³\n• **Source**: Central Pollution Control Board`,
         timestamp: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
         provenanceSourceId: 'src_cpcb_aqi',
         suggestedAction: {
           type: 'view_data_catalog',
-          title: 'Inspect CPCB Live Air Dataset in Catalog',
+          title: 'View Dataset in Open Data Catalog',
         },
       };
     }
 
-    // 4. Bounty / Reward Query
-    if (q.includes('bounty') || q.includes('reward') || q.includes('points') || q.includes('upi') || q.includes('earn')) {
+    // Bounties intent
+    if (q.includes('bounty') || q.includes('reward') || q.includes('points') || q.includes('upi')) {
       return {
         id: `msg_${Date.now()}`,
         sender: 'ai',
-        text: `JanVaani uses a **Proof-of-Impact Reward Engine** (strictly preventing spam):\n\n1. **Verified Problem Finding**: 50 – 200 pts once 5+ neighborhood residents verify with photos.\n2. **Engineering Solution Submission**: ₹500 – ₹10,000 sponsored bounties when adopted by municipal engineers.\n3. **Resolution Verification**: 100 pts for auditing and verifying that a pothole or drain was truly fixed.\n4. **Payout**: Auto-credited to your verified UPI VPA on the 1st of every month.`,
+        text: `**Proof-of-Impact Rewards:**\n• Problem Verification: 50 – 200 pts\n• Solution Bounties: ₹500 – ₹10,000\n• Direct UPI settlement on 1st of month.`,
         timestamp: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
       };
     }
 
-    // 5. RTI / Legal / Governance Query
-    if (q.includes('rti') || q.includes('escalate') || q.includes('complaint') || q.includes('delay') || q.includes('sla')) {
-      return {
-        id: `msg_${Date.now()}`,
-        sender: 'ai',
-        text: `If a municipal department breaches the standard **72-hour P1 Emergency SLA** without action, you can:\n\n1. **Auto-Escalate to Ward Executive Engineer**: Trigger a red-flag alert to the Zonal Dy. Municipal Commissioner.\n2. **File an Online RTI Application**: Apply on your state RTI portal ('onlinerti.gujarat.gov.in') asking for contractor tender terms and asphalt inspection test reports.\n3. **Initiate a Citizen Co-Sign Petition**: Gather 50+ ward votes on JanVaani to auto-dispatch an alert to the District Collector.`,
-        timestamp: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
-      };
-    }
-
-    // Default Fallback Response
     return {
       id: `msg_${Date.now()}`,
       sender: 'ai',
-      text: `I understand your civic query regarding "${userQuery}". You can track live problem cases on our GIS Map, review verified open data in our National Data Catalog, or connect directly with your Ward Corporator for immediate intervention.`,
+      text: `Regarding "${userQuery}": You can track live issues on our GIS Map, check our National Data Catalog, or connect with your local Ward Corporator.`,
       timestamp: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
       suggestedAction: {
         type: 'view_map',
-        title: 'Explore High-Definition Spatial Map',
+        title: 'Open Spatial GIS Map',
       },
     };
   };
@@ -244,129 +200,117 @@ export function CivicChatbotModal() {
       const aiReply = generateAiResponse(text);
       setMessages((prev) => [...prev, aiReply]);
       setIsTyping(false);
-    }, 800);
+    }, 600);
   };
 
   return (
     <>
-      {/* Floating Action Button (Always Visible in Bottom Right) */}
+      {/* Sleek Compact Floating Button */}
       {!isOpen && (
         <button
           type="button"
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-5 right-5 z-50 p-3.5 sm:px-4 sm:py-3 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-extrabold text-xs shadow-2xl flex items-center gap-2 hover:scale-105 transition-all duration-300 border-2 border-white/20 animate-bounce group"
-          title="Open JanVaani AI Civic Assistant"
+          className="fixed bottom-4 right-4 z-50 px-3 py-2 rounded-full bg-slate-900/95 hover:bg-blue-600 text-white font-extrabold text-xs shadow-xl flex items-center gap-2 hover:scale-105 transition-all duration-200 border border-slate-700/80 backdrop-blur-md group"
+          title="Open Small Civic AI Assistant"
         >
           <div className="relative">
-            <Bot className="w-5 h-5" />
-            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 border border-white" />
+            <Bot className="w-4 h-4 text-blue-400 group-hover:text-white transition-colors" />
+            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400" />
           </div>
-          <span className="hidden sm:inline">JanVaani AI Saathi</span>
-          <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+          <span className="text-[11px] font-black">AI Saathi</span>
         </button>
       )}
 
-      {/* Interactive Chatbot Window */}
+      {/* Small Compact Chatbot Window */}
       {isOpen && (
         <div
-          className={`fixed z-50 transition-all duration-300 ${
+          className={`fixed z-50 transition-all duration-200 ${
             isExpanded
-              ? 'inset-4 sm:inset-10 rounded-3xl'
-              : 'bottom-5 right-5 w-[92vw] sm:w-[420px] h-[580px] rounded-3xl'
-          } bg-white shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-in fade-in zoom-in-95`}
+              ? 'inset-4 sm:inset-12 rounded-3xl'
+              : 'bottom-4 right-4 w-[90vw] sm:w-[340px] h-[450px] rounded-2xl'
+          } bg-white shadow-2xl border border-slate-200/90 overflow-hidden flex flex-col animate-in fade-in zoom-in-95`}
         >
-          {/* Header Bar */}
-          <div className="p-4 bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 text-white flex items-center justify-between border-b border-white/10 shrink-0">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-blue-600 flex items-center justify-center shadow-md">
-                <Bot className="w-5 h-5 text-white" />
+          {/* Compact Header Bar */}
+          <div className="px-3.5 py-2.5 bg-slate-950 text-white flex items-center justify-between border-b border-slate-800 shrink-0">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white">
+                <Bot className="w-4 h-4" />
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <h3 className="text-sm font-black text-white">JanVaani AI Saathi</h3>
-                  <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.2 rounded bg-blue-500/30 text-blue-300 border border-blue-400/30">
-                    Multilingual AI
+                  <h3 className="text-xs font-black text-white leading-none">JanVaani AI</h3>
+                  <span className="text-[8px] font-extrabold uppercase px-1 py-0.2 rounded bg-blue-500/20 text-blue-300">
+                    Mini
                   </span>
                 </div>
-                <div className="text-[11px] text-slate-400 flex items-center gap-1">
+                <span className="text-[10px] text-emerald-400 font-semibold flex items-center gap-1 mt-0.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span>Online • Speaks 10+ Indian Languages</span>
-                </div>
+                  Online
+                </span>
               </div>
             </div>
 
-            <div className="flex items-center gap-1 text-slate-300">
+            <div className="flex items-center gap-1 text-slate-400">
               <button
                 type="button"
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="p-1.5 rounded-xl hover:bg-white/10 hover:text-white transition-colors"
-                title={isExpanded ? 'Minimize' : 'Maximize'}
+                className="p-1 rounded-md hover:bg-slate-800 hover:text-white transition-colors"
+                title={isExpanded ? 'Restore Small' : 'Expand'}
               >
-                {isExpanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                {isExpanded ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
               </button>
 
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="p-1.5 rounded-xl hover:bg-white/10 hover:text-white transition-colors"
+                className="p-1 rounded-md hover:bg-slate-800 hover:text-white transition-colors"
                 title="Close"
               >
-                <X className="w-4 h-4" />
+                <X className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
 
-          {/* AI Trust Transparency Warning Strip */}
-          <div className="px-4 py-1.5 bg-amber-50 border-b border-amber-200 text-[10px] font-bold text-amber-900 flex items-center justify-between shrink-0">
-            <div className="flex items-center gap-1.5">
-              <Sparkles className="w-3 h-3 text-amber-600 shrink-0" />
-              <span>AI Inferred Assistant • Real Data Verified at data.gov.in</span>
-            </div>
-            <Link href="/about/technology" className="underline hover:text-amber-950">
-              Tech Stack
-            </Link>
-          </div>
-
-          {/* Messages Scrollable Body */}
-          <div className="flex-1 p-4 space-y-4 overflow-y-auto bg-slate-50/50">
+          {/* Compact Messages Body */}
+          <div className="flex-1 p-3 space-y-2.5 overflow-y-auto bg-slate-50/60 text-xs">
             {messages.map((msg) => (
               <div
                 key={msg.id}
-                className={`flex gap-2.5 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={`flex gap-2 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 {msg.sender === 'ai' && (
-                  <div className="w-7 h-7 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 mt-1 shadow-xs">
-                    <Bot className="w-4 h-4" />
+                  <div className="w-5 h-5 rounded-md bg-blue-600 text-white flex items-center justify-center shrink-0 mt-0.5">
+                    <Bot className="w-3 h-3" />
                   </div>
                 )}
 
                 <div
-                  className={`max-w-[85%] rounded-2xl p-3.5 text-xs leading-relaxed space-y-2 shadow-xs ${
+                  className={`max-w-[86%] rounded-xl p-2.5 text-[11px] leading-relaxed space-y-1.5 shadow-xs ${
                     msg.sender === 'user'
-                      ? 'bg-blue-600 text-white rounded-br-none'
+                      ? 'bg-blue-600 text-white rounded-br-none font-medium'
                       : 'bg-white text-slate-800 border border-slate-200/90 rounded-bl-none'
                   }`}
                 >
-                  <div className="whitespace-pre-line font-medium">{msg.text}</div>
+                  <div className="whitespace-pre-line">{msg.text}</div>
 
-                  {/* Provenance Badge if sourced from open data */}
+                  {/* Provenance Badge */}
                   {msg.provenanceSourceId && (
-                    <div className="pt-1">
+                    <div className="pt-0.5">
                       <DataSourceBadge sourceId={msg.provenanceSourceId} size="sm" />
                     </div>
                   )}
 
                   {/* Suggested Action Card */}
                   {msg.suggestedAction && (
-                    <div className="pt-2 border-t border-slate-100 mt-2">
+                    <div className="pt-1.5 border-t border-slate-100 mt-1">
                       {msg.suggestedAction.type === 'report_problem' && (
                         <Link
                           href="/report"
                           onClick={() => setIsOpen(false)}
-                          className="w-full py-2 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all"
+                          className="w-full py-1.5 px-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-[10px] flex items-center justify-center gap-1 transition-colors"
                         >
                           <span>{msg.suggestedAction.title}</span>
-                          <ArrowRight className="w-3.5 h-3.5" />
+                          <ArrowRight className="w-3 h-3" />
                         </Link>
                       )}
 
@@ -374,10 +318,10 @@ export function CivicChatbotModal() {
                         <Link
                           href="/government/representatives"
                           onClick={() => setIsOpen(false)}
-                          className="w-full py-2 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all"
+                          className="w-full py-1.5 px-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-[10px] flex items-center justify-center gap-1 transition-colors"
                         >
                           <span>{msg.suggestedAction.title}</span>
-                          <ArrowRight className="w-3.5 h-3.5" />
+                          <ArrowRight className="w-3 h-3" />
                         </Link>
                       )}
 
@@ -385,10 +329,10 @@ export function CivicChatbotModal() {
                         <Link
                           href="/data-catalog"
                           onClick={() => setIsOpen(false)}
-                          className="w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all"
+                          className="w-full py-1.5 px-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-[10px] flex items-center justify-center gap-1 transition-colors"
                         >
                           <span>{msg.suggestedAction.title}</span>
-                          <ExternalLink className="w-3.5 h-3.5" />
+                          <ExternalLink className="w-3 h-3" />
                         </Link>
                       )}
 
@@ -396,17 +340,17 @@ export function CivicChatbotModal() {
                         <Link
                           href="/map"
                           onClick={() => setIsOpen(false)}
-                          className="w-full py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all"
+                          className="w-full py-1.5 px-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-[10px] flex items-center justify-center gap-1 transition-colors"
                         >
                           <span>{msg.suggestedAction.title}</span>
-                          <ArrowRight className="w-3.5 h-3.5" />
+                          <ArrowRight className="w-3 h-3" />
                         </Link>
                       )}
                     </div>
                   )}
 
                   <div
-                    className={`text-[9px] font-semibold text-right ${
+                    className={`text-[8px] font-semibold text-right ${
                       msg.sender === 'user' ? 'text-blue-200' : 'text-slate-400'
                     }`}
                   >
@@ -415,78 +359,74 @@ export function CivicChatbotModal() {
                 </div>
 
                 {msg.sender === 'user' && (
-                  <div className="w-7 h-7 rounded-xl bg-slate-800 text-white flex items-center justify-center shrink-0 mt-1 shadow-xs">
-                    <User className="w-4 h-4" />
+                  <div className="w-5 h-5 rounded-md bg-slate-800 text-white flex items-center justify-center shrink-0 mt-0.5">
+                    <User className="w-3 h-3" />
                   </div>
                 )}
               </div>
             ))}
 
             {isTyping && (
-              <div className="flex gap-2 items-center text-xs text-slate-500 font-bold p-2 animate-pulse">
-                <Bot className="w-4 h-4 text-blue-600" />
-                <span>JanVaani AI is analyzing open civic telemetry...</span>
+              <div className="flex gap-1.5 items-center text-[10px] text-slate-500 font-bold p-1 animate-pulse">
+                <Bot className="w-3 h-3 text-blue-600" />
+                <span>AI is thinking...</span>
               </div>
             )}
 
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Quick Action Suggestion Chips */}
-          <div className="px-3 py-2 bg-white border-t border-slate-100 overflow-x-auto flex items-center gap-1.5 scrollbar-none shrink-0">
+          {/* Compact Quick Suggestion Chips */}
+          <div className="px-2 py-1.5 bg-white border-t border-slate-100 overflow-x-auto flex items-center gap-1 scrollbar-none shrink-0">
             {QUICK_PROMPTS.map((prompt, idx) => (
               <button
                 key={idx}
                 type="button"
                 onClick={() => handleSendMessage(prompt)}
-                className="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 text-[11px] font-bold whitespace-nowrap transition-colors border border-slate-200/80"
+                className="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 text-[10px] font-bold whitespace-nowrap transition-colors border border-slate-200/80"
               >
                 {prompt}
               </button>
             ))}
           </div>
 
-          {/* Input & Voice Bar */}
-          <div className="p-3 bg-white border-t border-slate-200 shrink-0">
+          {/* Compact Input Bar */}
+          <div className="p-2 bg-white border-t border-slate-200 shrink-0">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 handleSendMessage();
               }}
-              className="flex items-center gap-2"
+              className="flex items-center gap-1.5"
             >
               <button
                 type="button"
                 onClick={handleToggleVoice}
-                className={`p-2.5 rounded-xl transition-all ${
+                className={`p-1.5 rounded-lg transition-all ${
                   isListening
                     ? 'bg-rose-600 text-white animate-pulse'
                     : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
                 }`}
-                title={isListening ? 'Listening... Speak in Hindi/English/Gujarati' : 'Voice Input'}
+                title={isListening ? 'Listening...' : 'Voice Input'}
               >
-                {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                {isListening ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
               </button>
 
               <input
                 type="text"
-                placeholder={
-                  isListening
-                    ? 'Listening... Speak in Hindi, Gujarati, English...'
-                    : 'Ask anything or describe a civic problem...'
-                }
+                placeholder={isListening ? 'Listening...' : 'Ask AI Saathi...'}
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
-                className="flex-1 px-3.5 py-2.5 text-xs font-semibold bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-slate-900"
+                className="flex-1 px-2.5 py-1.5 text-[11px] font-semibold bg-slate-50 border border-slate-200 rounded-lg focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
               />
 
               <button
                 type="submit"
                 disabled={!inputText.trim()}
-                className="p-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white transition-all shadow-md"
-                title="Send Message"
+                className="p-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white transition-all shadow-xs"
+                title="Send"
               >
-                <Send className="w-4 h-4" />
+                <Send className="w-3.5 h-3.5" />
               </button>
             </form>
           </div>
