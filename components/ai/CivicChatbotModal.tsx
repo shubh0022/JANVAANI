@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { JanVaaniSymbol } from '@/components/ui/JanVaaniLogo';
 import { DataSourceBadge } from '@/components/ui/DataSourceBadge';
 import {
   Sparkles,
@@ -9,7 +10,6 @@ import {
   Mic,
   MicOff,
   X,
-  Bot,
   User,
   ArrowRight,
   Minimize2,
@@ -199,36 +199,40 @@ export function CivicChatbotModal() {
 
   return (
     <>
-      {/* Very Small Floating Circle Launcher (36px) */}
+      {/* Very Small Floating Launcher with Fitted Official Website Logo */}
       {!isOpen && (
         <button
           type="button"
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-3 right-3 z-50 w-9 h-9 rounded-full bg-slate-950 hover:bg-blue-600 text-white shadow-lg flex items-center justify-center hover:scale-110 transition-all duration-200 border border-slate-700/80 backdrop-blur-md group"
+          className="fixed bottom-3 right-3 z-50 w-10 h-10 rounded-full bg-white hover:bg-slate-50 shadow-xl flex items-center justify-center hover:scale-110 transition-all duration-200 border-2 border-blue-600/30 p-1 group"
           title="JanVaani AI (Click to open)"
         >
-          <Bot className="w-4 h-4 text-blue-400 group-hover:text-white transition-colors" />
-          <span className="absolute top-0 right-0 w-2 h-2 rounded-full bg-emerald-400 border border-slate-950" />
+          <div className="relative w-full h-full flex items-center justify-center">
+            <JanVaaniSymbol size={28} colorMode="full" className="transition-transform group-hover:scale-105" />
+            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white animate-pulse" />
+          </div>
         </button>
       )}
 
-      {/* Very Small Compact Window (290px × 370px) */}
+      {/* Very Small Compact Window with Fitted Logo Header */}
       {isOpen && (
         <div
           className={`fixed z-50 transition-all duration-200 ${
             isExpanded
               ? 'inset-4 sm:inset-16 rounded-2xl'
-              : 'bottom-3 right-3 w-[290px] sm:w-[300px] h-[370px] rounded-xl'
+              : 'bottom-3 right-3 w-[290px] sm:w-[300px] h-[375px] rounded-xl'
           } bg-white shadow-2xl border border-slate-200 overflow-hidden flex flex-col animate-in fade-in zoom-in-95`}
         >
-          {/* Micro Header */}
+          {/* Micro Header with Official Website Logo */}
           <div className="px-2.5 py-1.5 bg-slate-950 text-white flex items-center justify-between border-b border-slate-800 shrink-0">
-            <div className="flex items-center gap-1.5">
-              <div className="w-5 h-5 rounded-md bg-blue-600 flex items-center justify-center text-white">
-                <Bot className="w-3 h-3" />
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-md bg-white flex items-center justify-center p-0.5 shadow-xs">
+                <JanVaaniSymbol size={20} colorMode="full" />
               </div>
-              <span className="text-[11px] font-black text-white">AI Saathi</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <div className="flex items-center gap-1">
+                <span className="text-[11px] font-black text-white">JanVaani AI</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse ml-0.5" />
+              </div>
             </div>
 
             <div className="flex items-center gap-0.5 text-slate-400">
@@ -252,7 +256,7 @@ export function CivicChatbotModal() {
             </div>
           </div>
 
-          {/* Micro Messages Body */}
+          {/* Micro Messages Body with Logo Avatars */}
           <div className="flex-1 p-2 space-y-2 overflow-y-auto bg-slate-50/70 text-[10px]">
             {messages.map((msg) => (
               <div
@@ -260,8 +264,8 @@ export function CivicChatbotModal() {
                 className={`flex gap-1.5 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 {msg.sender === 'ai' && (
-                  <div className="w-4 h-4 rounded bg-blue-600 text-white flex items-center justify-center shrink-0 mt-0.5">
-                    <Bot className="w-2.5 h-2.5" />
+                  <div className="w-5 h-5 rounded-md bg-white border border-slate-200 flex items-center justify-center shrink-0 mt-0.5 p-0.5 shadow-2xs">
+                    <JanVaaniSymbol size={16} colorMode="full" />
                   </div>
                 )}
 
@@ -322,16 +326,18 @@ export function CivicChatbotModal() {
                 </div>
 
                 {msg.sender === 'user' && (
-                  <div className="w-4 h-4 rounded bg-slate-800 text-white flex items-center justify-center shrink-0 mt-0.5">
-                    <User className="w-2.5 h-2.5" />
+                  <div className="w-5 h-5 rounded-md bg-slate-800 text-white flex items-center justify-center shrink-0 mt-0.5">
+                    <User className="w-3 h-3" />
                   </div>
                 )}
               </div>
             ))}
 
             {isTyping && (
-              <div className="flex gap-1 items-center text-[9px] text-slate-500 font-bold p-1 animate-pulse">
-                <Bot className="w-2.5 h-2.5 text-blue-600" />
+              <div className="flex gap-1.5 items-center text-[9px] text-slate-500 font-bold p-1 animate-pulse">
+                <div className="w-4 h-4 rounded bg-white p-0.5 border border-slate-200">
+                  <JanVaaniSymbol size={12} colorMode="full" />
+                </div>
                 <span>AI typing...</span>
               </div>
             )}
