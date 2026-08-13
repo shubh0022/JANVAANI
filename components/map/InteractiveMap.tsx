@@ -29,6 +29,8 @@ import {
   ThumbsUp,
   RotateCcw,
   Sparkles,
+  ExternalLink,
+  ChevronDown,
 } from 'lucide-react';
 
 interface InteractiveMapProps {
@@ -37,7 +39,14 @@ interface InteractiveMapProps {
   selectedProblemId?: string;
 }
 
-type MapTheme = 'tactical_dark' | 'municipal_vector' | 'satellite_hybrid' | 'osm_standard';
+export type MapProviderTheme =
+  | 'google_hybrid'
+  | 'google_roadmap'
+  | 'google_terrain'
+  | 'apple_maps_vector'
+  | 'apple_maps_dark'
+  | 'esri_satellite';
+
 type AnalyticalOverlay = 'all_pins' | 'heatmap' | 'ward_boundaries' | 'flood_drainage' | 'pothole_pqi';
 
 // City Geo Centers
@@ -51,26 +60,68 @@ const CITY_COORDINATES: Record<string, { lat: number; lng: number; zoom: number 
   Delhi: { lat: 28.6139, lng: 77.2090, zoom: 12 },
 };
 
-// High-Resolution Tile Server Configurations
-const TILE_SERVERS: Record<MapTheme, { url: string; attribution: string; subdomains?: string[] }> = {
-  tactical_dark: {
-    url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-    subdomains: ['a', 'b', 'c', 'd'],
-    attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; OpenStreetMap',
+// Google Maps & Apple Maps & Esri Satellite High-Resolution Tile Server Configurations
+const MAP_PROVIDERS: Record<
+  MapProviderTheme,
+  {
+    label: string;
+    engine: 'Google Maps' | 'Apple Maps' | 'Esri';
+    icon: string;
+    url: string;
+    attribution: string;
+    subdomains?: string[];
+    maxZoom?: number;
+  }
+> = {
+  google_hybrid: {
+    label: 'Google Maps (Satellite Hybrid)',
+    engine: 'Google Maps',
+    icon: '🛰️',
+    url: 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
+    attribution: '&copy; Google Maps Imagery &copy; 2026 Maxar Technologies',
+    maxZoom: 20,
   },
-  municipal_vector: {
+  google_roadmap: {
+    label: 'Google Maps (Roadmap)',
+    engine: 'Google Maps',
+    icon: '🗺️',
+    url: 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+    attribution: '&copy; Google Maps Data &copy; 2026 Google',
+    maxZoom: 20,
+  },
+  google_terrain: {
+    label: 'Google Maps (Terrain Topo)',
+    engine: 'Google Maps',
+    icon: '🏔️',
+    url: 'https://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',
+    attribution: '&copy; Google Maps Topography &copy; 2026 Google',
+    maxZoom: 20,
+  },
+  apple_maps_vector: {
+    label: 'Apple Maps (Clean Vector)',
+    engine: 'Apple Maps',
+    icon: '🍎',
     url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
     subdomains: ['a', 'b', 'c', 'd'],
-    attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; OpenStreetMap',
+    attribution: 'Apple MapKit Style &copy; CARTO &copy; OpenStreetMap',
+    maxZoom: 19,
   },
-  satellite_hybrid: {
+  apple_maps_dark: {
+    label: 'Apple Maps (Dark Flyover)',
+    engine: 'Apple Maps',
+    icon: '🍎',
+    url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    subdomains: ['a', 'b', 'c', 'd'],
+    attribution: 'Apple Dark Theme &copy; CARTO &copy; OpenStreetMap',
+    maxZoom: 19,
+  },
+  esri_satellite: {
+    label: 'Esri World Imagery (Maxar)',
+    engine: 'Esri',
+    icon: '🛰️',
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    attribution: 'Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics',
-  },
-  osm_standard: {
-    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    subdomains: ['a', 'b', 'c'],
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    attribution: 'Tiles &copy; Esri &mdash; Maxar, Earthstar Geographics',
+    maxZoom: 19,
   },
 };
 
@@ -171,7 +222,8 @@ export function InteractiveMap({
 
   // States
   const [selectedCity, setSelectedCity] = useState(initialCity);
-  const [mapTheme, setMapTheme] = useState<MapTheme>('tactical_dark');
+  const [mapProvider, setMapProvider] = useState<MapProviderTheme>('google_hybrid');
+  const [providerDropdownOpen, setProviderDropdownOpen] = useState(false);
   const [activeOverlay, setActiveOverlay] = useState<AnalyticalOverlay>('all_pins');
   const [selectedSeverity, setSelectedSeverity] = useState<string>('all');
   const [selectedDept, setSelectedDept] = useState<string>('all');
@@ -180,7 +232,7 @@ export function InteractiveMap({
   const [locationMessage, setLocationMessage] = useState<string | null>(null);
 
   // Active Problem for Drawer
-  const [activeProblem, setActiveProblem] = useState<ProblemCase | null>(null);
+  const [activeProblem, setActiveProblem] = useState<any | null>(null);
 
   // Enrich problems with realistic geographic coordinates
   const enrichedProblems = useMemo(() => {
@@ -243,12 +295,12 @@ export function InteractiveMap({
         attributionControl: true,
       });
 
-      // Add Tile Layer
-      const tileConfig = TILE_SERVERS[mapTheme];
+      // Add Tile Layer (Google Maps / Apple Maps / Esri)
+      const tileConfig = MAP_PROVIDERS[mapProvider];
       const tileLayer = L.tileLayer(tileConfig.url, {
         subdomains: tileConfig.subdomains || ['a', 'b', 'c', 'd'],
         attribution: tileConfig.attribution,
-        maxZoom: 19,
+        maxZoom: tileConfig.maxZoom || 20,
       }).addTo(map);
 
       tileLayerRef.current = tileLayer;
@@ -291,7 +343,7 @@ export function InteractiveMap({
     });
   }, [selectedCity]);
 
-  // 3. Handle Map Theme Switch
+  // 3. Handle Map Provider Switch (Google Maps / Apple Maps / Esri)
   useEffect(() => {
     if (!mapInstanceRef.current || !tileLayerRef.current) return;
     async function updateTile() {
@@ -299,17 +351,17 @@ export function InteractiveMap({
       if (!mapInstanceRef.current) return;
 
       mapInstanceRef.current.removeLayer(tileLayerRef.current);
-      const tileConfig = TILE_SERVERS[mapTheme];
+      const tileConfig = MAP_PROVIDERS[mapProvider];
       const newTileLayer = L.tileLayer(tileConfig.url, {
         subdomains: tileConfig.subdomains || ['a', 'b', 'c', 'd'],
         attribution: tileConfig.attribution,
-        maxZoom: 19,
+        maxZoom: tileConfig.maxZoom || 20,
       }).addTo(mapInstanceRef.current);
 
       tileLayerRef.current = newTileLayer;
     }
     updateTile();
-  }, [mapTheme]);
+  }, [mapProvider]);
 
   // 4. Update Markers, Ward Boundaries & Overlays
   useEffect(() => {
@@ -328,16 +380,16 @@ export function InteractiveMap({
         WARD_POLYGONS.forEach((ward) => {
           const polygon = L.polygon(ward.coords as any, {
             color: ward.color,
-            weight: 2,
-            opacity: 0.8,
+            weight: 2.5,
+            opacity: 0.9,
             fillColor: ward.fillColor,
-            fillOpacity: activeOverlay === 'ward_boundaries' ? 0.25 : 0.08,
-            dashArray: '4, 4',
+            fillOpacity: activeOverlay === 'ward_boundaries' ? 0.3 : 0.1,
+            dashArray: '5, 5',
           });
 
           polygon.bindTooltip(
-            `<div class="text-[11px] font-black font-sans px-1 text-slate-900">${ward.name}<br/><span class="text-emerald-600 font-bold">${ward.slaScore}% SLA</span></div>`,
-            { sticky: true, className: 'rounded-xl shadow-lg border border-slate-200' }
+            `<div class="text-xs font-black font-sans px-1.5 py-0.5 text-slate-900 leading-tight">${ward.name}<br/><span class="text-emerald-600 font-extrabold">${ward.slaScore}% SLA Score</span></div>`,
+            { sticky: true, className: 'rounded-xl shadow-xl border border-slate-200' }
           );
 
           polygonsLayerRef.current.addLayer(polygon);
@@ -347,8 +399,8 @@ export function InteractiveMap({
       // Render Flood / Stormwater Catchments
       if (activeOverlay === 'flood_drainage') {
         const floodAreas = [
-          { center: [22.3245, 73.1932], radius: 600, color: '#ef4444' },
-          { center: [22.2982, 73.1661], radius: 450, color: '#f59e0b' },
+          { center: [22.3245, 73.1932], radius: 650, color: '#ef4444' },
+          { center: [22.2982, 73.1661], radius: 500, color: '#f59e0b' },
         ];
 
         floodAreas.forEach((fa) => {
@@ -356,10 +408,10 @@ export function InteractiveMap({
             radius: fa.radius,
             color: fa.color,
             fillColor: fa.color,
-            fillOpacity: 0.35,
+            fillOpacity: 0.4,
             weight: 2,
           });
-          circle.bindTooltip('<strong>High Inundation Risk</strong><br/>Catchment Level &gt; 20cm', {
+          circle.bindTooltip('<strong>High Inundation Risk Area</strong><br/>Stormwater Outflow &gt; 25cm', {
             sticky: true,
           });
           heatmapLayerRef.current.addLayer(circle);
@@ -369,13 +421,13 @@ export function InteractiveMap({
       // Render Heatmap Glows
       if (activeOverlay === 'heatmap') {
         filteredProblems.forEach((p) => {
-          const radius = p.severity === 'critical' ? 700 : p.severity === 'high' ? 500 : 350;
+          const radius = p.severity === 'critical' ? 750 : p.severity === 'high' ? 550 : 400;
           const color = p.severity === 'critical' ? '#dc2626' : p.severity === 'high' ? '#f43f5e' : '#f59e0b';
           const glow = L.circle([p.lat, p.lng], {
             radius,
             color,
             fillColor: color,
-            fillOpacity: 0.4,
+            fillOpacity: 0.45,
             weight: 0,
           });
           heatmapLayerRef.current.addLayer(glow);
@@ -400,40 +452,41 @@ export function InteractiveMap({
           <div class="relative group cursor-pointer" style="transform: translate(-50%, -100%);">
             ${
               isSelected
-                ? `<div style="position: absolute; inset: -8px; background: rgba(59, 130, 246, 0.4); border-radius: 9999px; animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>`
+                ? `<div style="position: absolute; inset: -10px; background: rgba(59, 130, 246, 0.5); border-radius: 9999px; animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>`
                 : ''
             }
             <div style="
               background-color: ${colorBg};
-              width: ${isSelected ? '36px' : '30px'};
-              height: ${isSelected ? '36px' : '30px'};
+              width: ${isSelected ? '38px' : '32px'};
+              height: ${isSelected ? '38px' : '32px'};
               border-radius: 9999px;
               display: flex;
               align-items: center;
               justify-content: center;
-              box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+              box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.6);
               border: 3px solid #ffffff;
               transition: all 0.2s ease;
             ">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
                 <circle cx="12" cy="10" r="3"></circle>
               </svg>
               <span style="
                 position: absolute;
-                top: -4px;
-                right: -4px;
+                top: -5px;
+                right: -5px;
                 background-color: #0f172a;
                 color: #ffffff;
                 font-size: 9px;
-                font-weight: 800;
+                font-weight: 900;
                 border-radius: 9999px;
-                width: 16px;
-                height: 16px;
+                width: 18px;
+                height: 18px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                border: 1.5px solid #ffffff;
+                border: 2px solid #ffffff;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.3);
               ">
                 ${p.civicReactions.face_this_too || 1}
               </span>
@@ -444,8 +497,8 @@ export function InteractiveMap({
         const customIcon = L.divIcon({
           className: 'custom-leaflet-marker',
           html: customHtml,
-          iconSize: [32, 32],
-          iconAnchor: [16, 32],
+          iconSize: [34, 34],
+          iconAnchor: [17, 34],
         });
 
         const marker = L.marker([p.lat, p.lng], { icon: customIcon });
@@ -472,7 +525,7 @@ export function InteractiveMap({
       setIsLocating(false);
       setLocationMessage('Centering view on Karelibaug, Vadodara');
       if (mapInstanceRef.current) {
-        mapInstanceRef.current.flyTo([22.3245, 73.1932], 15, { duration: 1.5 });
+        mapInstanceRef.current.flyTo([22.3245, 73.1932], 16, { duration: 1.5 });
       }
       if (enrichedProblems[0]) setActiveProblem(enrichedProblems[0]);
       setTimeout(() => setLocationMessage(null), 3000);
@@ -496,6 +549,8 @@ export function InteractiveMap({
       });
     }
   };
+
+  const activeProvider = MAP_PROVIDERS[mapProvider];
 
   return (
     <div
@@ -580,27 +635,53 @@ export function InteractiveMap({
           </button>
         </div>
 
-        {/* Theme & Fullscreen Controls */}
-        <div className="pointer-events-auto flex items-center gap-1.5 bg-slate-950/90 backdrop-blur-md p-1 rounded-2xl shadow-2xl border border-slate-700/90">
+        {/* Engine Switcher (Google Maps / Apple Maps / Esri) & Fullscreen */}
+        <div className="pointer-events-auto relative flex items-center gap-1.5 bg-slate-950/90 backdrop-blur-md p-1 rounded-2xl shadow-2xl border border-slate-700/90">
           <button
             type="button"
-            onClick={() =>
-              setMapTheme((t) =>
-                t === 'tactical_dark'
-                  ? 'municipal_vector'
-                  : t === 'municipal_vector'
-                  ? 'satellite_hybrid'
-                  : t === 'satellite_hybrid'
-                  ? 'osm_standard'
-                  : 'tactical_dark'
-              )
-            }
-            className="px-2.5 py-1 text-[11px] font-bold text-slate-300 hover:text-white rounded-xl hover:bg-slate-800 transition-colors flex items-center gap-1"
-            title="Switch Map Resolution & Style"
+            onClick={() => setProviderDropdownOpen(!providerDropdownOpen)}
+            className="px-2.5 py-1 text-[11px] font-bold text-white bg-slate-800 hover:bg-slate-700 rounded-xl transition-all flex items-center gap-1.5 shadow-xs border border-slate-600/60"
+            title="Switch Map Engine Provider"
           >
-            <Layers className="w-3.5 h-3.5 text-blue-400" />
-            <span className="capitalize hidden sm:inline">{mapTheme.replace('_', ' ')}</span>
+            <span>{activeProvider.icon}</span>
+            <span className="font-extrabold truncate max-w-[140px] sm:max-w-none">
+              {activeProvider.label}
+            </span>
+            <ChevronDown className="w-3 h-3 text-slate-400" />
           </button>
+
+          {providerDropdownOpen && (
+            <div className="absolute right-0 top-full mt-2 w-72 bg-slate-900/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700 p-2 z-50 animate-in fade-in zoom-in-95 space-y-1">
+              <div className="px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-slate-400 border-b border-slate-800">
+                Select Map Engine &amp; Layer
+              </div>
+              {(Object.keys(MAP_PROVIDERS) as MapProviderTheme[]).map((key) => {
+                const item = MAP_PROVIDERS[key];
+                const isCurrent = mapProvider === key;
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => {
+                      setMapProvider(key);
+                      setProviderDropdownOpen(false);
+                    }}
+                    className={`w-full px-2.5 py-2 rounded-xl text-left text-xs font-bold flex items-center justify-between transition-colors ${
+                      isCurrent
+                        ? 'bg-blue-600 text-white shadow-xs'
+                        : 'text-slate-200 hover:bg-slate-800'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-base">{item.icon}</span>
+                      <span>{item.label}</span>
+                    </div>
+                    {isCurrent && <CheckCircle2 className="w-4 h-4 text-white" />}
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
           <button
             type="button"
@@ -702,7 +783,7 @@ export function InteractiveMap({
 
       {/* Slide-Out Detailed Spatial Case Inspector Drawer */}
       {activeProblem && (
-        <div className="absolute top-14 right-3 z-40 w-80 sm:w-[400px] bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in slide-in-from-right-6 duration-200 flex flex-col max-h-[82%]">
+        <div className="absolute top-14 right-3 z-40 w-80 sm:w-[410px] bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in slide-in-from-right-6 duration-200 flex flex-col max-h-[85%]">
           {/* Card Header Bar */}
           <div className="p-4 bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 text-white flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -769,8 +850,31 @@ export function InteractiveMap({
               </div>
             </div>
 
+            {/* Direct Google Maps & Apple Maps Navigation Buttons */}
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${activeProblem.lat},${activeProblem.lng}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="py-2 px-3 rounded-xl bg-slate-100 hover:bg-blue-50 text-slate-800 hover:text-blue-700 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors border border-slate-200"
+              >
+                <span>🗺️ Google Maps</span>
+                <ExternalLink className="w-3 h-3 text-slate-400" />
+              </a>
+
+              <a
+                href={`https://maps.apple.com/?q=${encodeURIComponent(activeProblem.title)}&ll=${activeProblem.lat},${activeProblem.lng}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors border border-slate-200"
+              >
+                <span>🍎 Apple Maps</span>
+                <ExternalLink className="w-3 h-3 text-slate-400" />
+              </a>
+            </div>
+
             {/* Direct Co-Sign Action Bar */}
-            <div className="flex items-center gap-2 pt-1">
+            <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => toggleCivicReaction(activeProblem.id, 'face_this_too')}
