@@ -51,6 +51,12 @@ export default function GovernmentPortalPage() {
 
           <div className="flex items-center gap-2 self-start sm:self-auto">
             <Link
+              href="/government/representatives"
+              className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-sm transition-colors"
+            >
+              🏛️ Representatives &amp; MLAs
+            </Link>
+            <Link
               href="/government/departments"
               className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/10 transition-colors"
             >

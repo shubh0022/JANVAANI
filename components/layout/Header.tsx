@@ -73,8 +73,15 @@ const MORE_HUBS = [
     category: 'Governance & Civic Structure',
     items: [
       {
+        href: '/government/representatives',
+        label: 'Elected Representatives & Officers',
+        desc: 'Ward Corporators, MLAs, MPs, IAS contacts & LAD funds',
+        icon: UserCheck,
+        color: 'text-blue-600 bg-blue-50',
+      },
+      {
         href: '/government',
-        label: 'Government & Wards',
+        label: 'Government Command Portal',
         desc: 'Ward officers, department escalations & SLA tracking',
         icon: Building2,
         color: 'text-emerald-600 bg-emerald-50',
