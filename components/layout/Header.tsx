@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useApp, LanguageCode } from '@/lib/store';
@@ -23,22 +23,93 @@ import {
   GraduationCap,
   Microscope,
   Award,
+  Trophy,
+  Compass,
+  FileSpreadsheet,
+  Palette,
+  BrainCircuit,
+  MapPin,
+  ExternalLink,
 } from 'lucide-react';
 
 import { JanVaaniLogo } from '@/components/ui/JanVaaniLogo';
 
-const NAV_LINKS = [
+// Primary quick-access navigation links
+const PRIMARY_NAV_LINKS = [
   { href: '/', label: 'Home' },
   { href: '/explore', label: 'Explore' },
   { href: '/problems', label: 'Problems' },
-  { href: '/map', label: 'Map GIS' },
-  { href: '/categories', label: 'Categories' },
+  { href: '/map', label: 'GIS Map' },
   { href: '/solutions', label: 'Solutions' },
   { href: '/communities', label: 'Communities' },
-  { href: '/rewards', label: 'Rewards' },
-  { href: '/brand', label: 'Brand Identity' },
-  { href: '/research', label: 'Research' },
-  { href: '/government', label: 'Government' },
+];
+
+// Secondary Hubs organized inside the "More" dropdown
+const MORE_HUBS = [
+  {
+    category: 'Governance & Civic Structure',
+    items: [
+      {
+        href: '/government',
+        label: 'Government & Wards',
+        desc: 'Ward officers, department escalations & SLA dashboards',
+        icon: Building2,
+        color: 'text-emerald-600 bg-emerald-50',
+      },
+      {
+        href: '/categories',
+        label: 'Taxonomy & Categories',
+        desc: 'Civic classification, severity matrices & subcategories',
+        icon: Layers,
+        color: 'text-indigo-600 bg-indigo-50',
+      },
+    ],
+  },
+  {
+    category: 'Intelligence & Research',
+    items: [
+      {
+        href: '/intelligence/10x',
+        label: '10x Intelligence Hub',
+        desc: 'AI duplicate detection, root cause & policy simulator',
+        icon: BrainCircuit,
+        color: 'text-purple-600 bg-purple-50',
+      },
+      {
+        href: '/research',
+        label: 'Research & Open Data',
+        desc: 'Open datasets, anonymized civic trends & developer API',
+        icon: Microscope,
+        color: 'text-cyan-600 bg-cyan-50',
+      },
+    ],
+  },
+  {
+    category: 'Impact & Community',
+    items: [
+      {
+        href: '/rewards',
+        label: 'Rewards & Bounties',
+        desc: 'Citizen points, sponsored bounties & civic badges',
+        icon: Trophy,
+        color: 'text-amber-600 bg-amber-50',
+      },
+      {
+        href: '/leaderboard',
+        label: 'Civic Leaderboard',
+        desc: 'Top ward problem solvers, colleges & community rankings',
+        icon: Award,
+        color: 'text-blue-600 bg-blue-50',
+      },
+      {
+        href: '/brand',
+        label: 'Brand Identity',
+        desc: 'Official logos, colors, voice guidelines & design assets',
+        icon: Palette,
+        color: 'text-rose-600 bg-rose-50',
+      },
+    ],
+  },
 ];
 
 const LANGUAGES: Array<{ code: LanguageCode; label: string; native: string }> = [
@@ -74,39 +145,73 @@ export function Header() {
   } = useApp();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
   const [notifDropdownOpen, setNotifDropdownOpen] = useState(false);
 
+  const navRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdowns on outside click
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (navRef.current && !navRef.current.contains(event.target as Node)) {
+        setMoreDropdownOpen(false);
+        setLangDropdownOpen(false);
+        setRoleDropdownOpen(false);
+        setNotifDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Close menus on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setMoreDropdownOpen(false);
+    setLangDropdownOpen(false);
+    setRoleDropdownOpen(false);
+    setNotifDropdownOpen(false);
+  }, [pathname]);
+
+  const isMoreActive = MORE_HUBS.some((group) =>
+    group.items.some((item) => pathname.startsWith(item.href))
+  );
+
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-sm">
-      {/* Top Notification/Demo Announcement Strip */}
+    <header ref={navRef} className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-xs">
+      {/* Top Announcement Bar */}
       <div className="bg-slate-900 text-white text-[11px] font-medium py-1 px-4 text-center flex items-center justify-center gap-2">
         <span className="bg-blue-600 text-white text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded tracking-wide">
           Live Civic Platform
         </span>
-        <span>
+        <span className="truncate">
           JanVaani: India&apos;s Citizen Problem & Solution Intelligence Platform • Speak. Share. Solve. Reward.
         </span>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-18">
-          {/* Logo & Brand Identity */}
-          <div className="flex items-center gap-6">
-            <Link href="/" className="flex items-center group py-1" title="JanVaani — Citizen Problem & Solution Intelligence Platform">
-              <JanVaaniLogo size="sm" showTagline={false} />
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Left: Brand Logo & Navigation */}
+          <div className="flex items-center gap-3 lg:gap-6 min-w-0">
+            <Link
+              href="/"
+              className="flex items-center group py-1 shrink-0"
+              title="JanVaani — Citizen Problem & Solution Intelligence Platform"
+            >
+              <JanVaaniLogo variant="compact" size="xs" showTagline={false} />
             </Link>
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden xl:flex items-center gap-1">
-              {NAV_LINKS.map((link) => {
+            <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1">
+              {PRIMARY_NAV_LINKS.map((link) => {
                 const isActive = pathname === link.href;
                 return (
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                    className={`px-2.5 xl:px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
                       isActive
                         ? 'bg-blue-50 text-blue-700 font-extrabold'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
@@ -116,20 +221,88 @@ export function Header() {
                   </Link>
                 );
               })}
+
+              {/* "More Hubs" Dropdown */}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMoreDropdownOpen(!moreDropdownOpen);
+                    setLangDropdownOpen(false);
+                    setRoleDropdownOpen(false);
+                    setNotifDropdownOpen(false);
+                  }}
+                  className={`flex items-center gap-1 px-2.5 xl:px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                    isMoreActive || moreDropdownOpen
+                      ? 'bg-blue-50 text-blue-700 font-extrabold'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  }`}
+                >
+                  <span>More</span>
+                  <ChevronDown
+                    className={`w-3 h-3 text-slate-400 transition-transform duration-200 ${
+                      moreDropdownOpen ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+
+                {moreDropdownOpen && (
+                  <div className="absolute left-0 mt-2 w-[520px] bg-white rounded-2xl shadow-2xl border border-slate-200 p-4 z-50 animate-in fade-in zoom-in-95 grid grid-cols-2 gap-4">
+                    {MORE_HUBS.map((group) => (
+                      <div key={group.category} className="space-y-2 col-span-2 first:col-span-1 [&:nth-child(2)]:col-span-1">
+                        <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-1 border-b border-slate-100 pb-1">
+                          {group.category}
+                        </div>
+                        <div className="space-y-1">
+                          {group.items.map((item) => {
+                            const Icon = item.icon;
+                            const isItemActive = pathname === item.href;
+                            return (
+                              <Link
+                                key={item.href}
+                                href={item.href}
+                                onClick={() => setMoreDropdownOpen(false)}
+                                className={`flex items-start gap-2.5 p-2 rounded-xl transition-all ${
+                                  isItemActive
+                                    ? 'bg-blue-50/80 text-blue-700'
+                                    : 'hover:bg-slate-50 text-slate-700'
+                                }`}
+                              >
+                                <div className={`p-1.5 rounded-lg shrink-0 ${item.color}`}>
+                                  <Icon className="w-4 h-4" />
+                                </div>
+                                <div className="min-w-0">
+                                  <div className="text-xs font-bold text-slate-900 leading-tight">
+                                    {item.label}
+                                  </div>
+                                  <div className="text-[10px] text-slate-500 leading-normal mt-0.5 line-clamp-1">
+                                    {item.desc}
+                                  </div>
+                                </div>
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </nav>
           </div>
 
-          {/* Right Action Bar */}
-          <div className="flex items-center gap-2 sm:gap-2.5">
+          {/* Right: Actions, Search, Role, Notifications & Profile */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* Global Search Button */}
             <button
+              type="button"
               onClick={() => setGlobalSearchOpen(true)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs text-slate-500 bg-slate-100 hover:bg-slate-200/80 transition-colors border border-slate-200/80"
-              title="Search JanVaani"
+              className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs text-slate-500 bg-slate-100 hover:bg-slate-200/80 transition-colors border border-slate-200/80"
+              title="Search JanVaani (⌘K)"
             >
-              <Search className="w-3.5 h-3.5 text-slate-500" />
-              <span className="hidden sm:inline font-medium">Search...</span>
-              <kbd className="hidden sm:inline-block bg-white text-[10px] font-mono px-1.5 py-0.5 rounded border border-slate-300 shadow-xs">
+              <Search className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+              <span className="hidden md:inline font-medium">Search...</span>
+              <kbd className="hidden md:inline-block bg-white text-[10px] font-mono px-1.5 py-0.5 rounded border border-slate-300 shadow-xs">
                 ⌘K
               </kbd>
             </button>
@@ -137,15 +310,18 @@ export function Header() {
             {/* Language Picker Dropdown */}
             <div className="relative">
               <button
+                type="button"
                 onClick={() => {
                   setLangDropdownOpen(!langDropdownOpen);
                   setRoleDropdownOpen(false);
                   setNotifDropdownOpen(false);
+                  setMoreDropdownOpen(false);
                 }}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 border border-slate-200 transition-colors"
+                className="flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 border border-slate-200 transition-colors"
+                title="Select Language"
               >
-                <Globe className="w-3.5 h-3.5 text-blue-600" />
-                <span className="uppercase">{language}</span>
+                <Globe className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                <span className="uppercase text-[11px]">{language}</span>
                 <ChevronDown className="w-3 h-3 text-slate-400" />
               </button>
 
@@ -157,6 +333,7 @@ export function Header() {
                   {LANGUAGES.map((l) => (
                     <button
                       key={l.code}
+                      type="button"
                       onClick={() => {
                         setLanguage(l.code);
                         setLangDropdownOpen(false);
@@ -176,16 +353,19 @@ export function Header() {
             {/* Interactive Demo Role Switcher */}
             <div className="relative hidden md:block">
               <button
+                type="button"
                 onClick={() => {
                   setRoleDropdownOpen(!roleDropdownOpen);
                   setLangDropdownOpen(false);
                   setNotifDropdownOpen(false);
+                  setMoreDropdownOpen(false);
                 }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 transition-colors shadow-sm"
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 transition-colors shadow-xs"
+                title="Switch Demo Role Persona"
               >
-                <span className="text-[10px] text-blue-300 uppercase">Role:</span>
-                <span className="capitalize">{activeRole}</span>
-                <ChevronDown className="w-3 h-3 text-slate-400" />
+                <span className="text-[10px] text-blue-300 uppercase font-bold">Role:</span>
+                <span className="capitalize text-[11px] max-w-[80px] sm:max-w-none truncate">{activeRole}</span>
+                <ChevronDown className="w-3 h-3 text-slate-400 shrink-0" />
               </button>
 
               {roleDropdownOpen && (
@@ -198,6 +378,7 @@ export function Header() {
                     return (
                       <button
                         key={r.role}
+                        type="button"
                         onClick={() => {
                           setUserRole(r.role);
                           setRoleDropdownOpen(false);
@@ -221,10 +402,12 @@ export function Header() {
             {/* Notification Center Bell */}
             <div className="relative">
               <button
+                type="button"
                 onClick={() => {
                   setNotifDropdownOpen(!notifDropdownOpen);
                   setLangDropdownOpen(false);
                   setRoleDropdownOpen(false);
+                  setMoreDropdownOpen(false);
                 }}
                 className="relative p-2 rounded-xl text-slate-600 hover:bg-slate-100 border border-slate-200 transition-colors"
                 title="Notifications"
@@ -274,29 +457,31 @@ export function Header() {
             {/* Primary CTA: + Report a Problem */}
             <Link
               href="/report"
-              className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-extrabold text-white bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-extrabold text-white bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 shadow-sm hover:shadow-md transition-all transform hover:-translate-y-0.5 whitespace-nowrap"
             >
               <PlusCircle className="w-4 h-4" />
-              <span>Report a Problem</span>
+              <span>Report Problem</span>
             </Link>
 
             {/* Profile Avatar */}
             <Link
               href="/dashboard"
-              className="flex items-center gap-1.5 p-1 rounded-xl hover:bg-slate-100 transition-colors"
-              title="Dashboard"
+              className="flex items-center p-0.5 rounded-xl hover:ring-2 hover:ring-blue-500/30 transition-all shrink-0"
+              title="Civic Dashboard"
             >
               <img
                 src={user.avatar}
                 alt={user.name}
-                className="w-8 h-8 rounded-full object-cover border border-slate-300"
+                className="w-8 h-8 rounded-full object-cover border border-slate-300 shadow-xs"
               />
             </Link>
 
-            {/* Mobile Hamburger Toggle */}
+            {/* Mobile / Tablet Hamburger Toggle */}
             <button
+              type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="xl:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-100 border border-slate-200"
+              className="lg:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-100 border border-slate-200"
+              title="Toggle Menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -304,26 +489,107 @@ export function Header() {
         </div>
       </div>
 
-      {/* Mobile Drawer Menu */}
+      {/* Mobile / Tablet Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="xl:hidden bg-white border-b border-slate-200 px-4 pt-2 pb-6 space-y-3 shadow-lg">
-          <div className="grid grid-cols-2 gap-2 pt-2">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                  pathname === link.href
-                    ? 'bg-blue-50 text-blue-700'
-                    : 'text-slate-700 hover:bg-slate-50'
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
+        <div className="lg:hidden bg-white border-b border-slate-200 px-4 pt-3 pb-6 space-y-4 shadow-xl max-h-[85vh] overflow-y-auto">
+          {/* Quick Search in Mobile */}
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              setGlobalSearchOpen(true);
+            }}
+            className="w-full flex items-center justify-between p-2.5 rounded-xl text-xs text-slate-500 bg-slate-100 border border-slate-200"
+          >
+            <div className="flex items-center gap-2">
+              <Search className="w-4 h-4 text-blue-600" />
+              <span className="font-medium">Search problems, solutions, wards...</span>
+            </div>
+            <kbd className="bg-white text-[10px] font-mono px-1.5 py-0.5 rounded border border-slate-300">
+              ⌘K
+            </kbd>
+          </button>
+
+          {/* Primary Quick Links */}
+          <div>
+            <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-2">
+              Navigation
+            </div>
+            <div className="grid grid-cols-2 gap-1.5">
+              {PRIMARY_NAV_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
+                    pathname === link.href
+                      ? 'bg-blue-50 text-blue-700'
+                      : 'text-slate-700 hover:bg-slate-50'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
           </div>
 
+          {/* Secondary Hubs */}
+          {MORE_HUBS.map((group) => (
+            <div key={group.category} className="pt-2 border-t border-slate-100">
+              <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-2">
+                {group.category}
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                {group.items.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center gap-2 p-2 rounded-xl hover:bg-slate-50 text-slate-700 text-xs font-bold"
+                    >
+                      <div className={`p-1.5 rounded-lg shrink-0 ${item.color}`}>
+                        <Icon className="w-4 h-4" />
+                      </div>
+                      <span>{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+
+          {/* Role Switcher in Mobile */}
+          <div className="pt-2 border-t border-slate-100">
+            <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-2">
+              Active Persona Role: <span className="text-blue-600 capitalize">{activeRole}</span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+              {ROLES.map((r) => {
+                const Icon = r.icon;
+                return (
+                  <button
+                    key={r.role}
+                    type="button"
+                    onClick={() => {
+                      setUserRole(r.role);
+                    }}
+                    className={`p-2 rounded-xl text-xs flex items-center gap-2 border text-left transition-all ${
+                      activeRole === r.role
+                        ? 'bg-blue-50 border-blue-300 text-blue-700 font-bold'
+                        : 'bg-white border-slate-200 text-slate-700'
+                    }`}
+                  >
+                    <Icon className={`w-3.5 h-3.5 ${r.color}`} />
+                    <span className="truncate">{r.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* CTA & User Status */}
           <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
             <Link
               href="/report"
@@ -335,17 +601,17 @@ export function Header() {
             </Link>
 
             <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
-              <div className="flex items-center gap-2">
-                <img src={user.avatar} alt={user.name} className="w-8 h-8 rounded-full" />
+              <div className="flex items-center gap-2.5">
+                <img src={user.avatar} alt={user.name} className="w-8 h-8 rounded-full border border-slate-300" />
                 <div>
                   <div className="text-xs font-bold text-slate-900">{user.name}</div>
-                  <div className="text-[10px] text-blue-600 font-semibold">{user.points} Points</div>
+                  <div className="text-[10px] text-blue-600 font-semibold">{user.points} Points • {user.location}</div>
                 </div>
               </div>
               <Link
                 href="/dashboard"
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-xs font-bold text-slate-700 bg-white px-3 py-1 rounded-lg border border-slate-200"
+                className="text-xs font-bold text-slate-700 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-xs"
               >
                 Dashboard
               </Link>
