@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useApp } from '@/lib/store';
 import { getLanguageByCode } from '@/lib/languages';
@@ -34,6 +34,12 @@ import {
   Layers,
   UserCheck,
   Fingerprint,
+  SlidersHorizontal,
+  FileCheck2,
+  ShieldAlert,
+  ShieldCheck,
+  Moon,
+  Zap,
 } from 'lucide-react';
 
 type SettingsTab =
@@ -48,28 +54,31 @@ export default function SettingsPage() {
   const { user, language } = useApp();
 
   // Active Tab
-  const [activeTab, setActiveTab] = useState<SettingsTab>('privacy');
+  const [activeTab, setActiveTab] = useState<SettingsTab>('profile');
   const [savedMessage, setSavedMessage] = useState<string | null>(null);
   const [langModalOpen, setLangModalOpen] = useState(false);
 
-  // Profile State
-  const [name, setName] = useState(user.name);
-  const [email, setEmail] = useState(user.email);
-  const [phone, setPhone] = useState(user.phone || '+91 98765 43210');
-  const [location, setLocation] = useState(user.location);
-  const [bio, setBio] = useState(user.bio);
-  const [wardNumber, setWardNumber] = useState('Ward 07 - North Zone');
+  // Profile Information State
+  const [name, setName] = useState('Neha Sharma');
+  const [email, setEmail] = useState('neha.sharma@example.com');
+  const [phone, setPhone] = useState('+91 98765 43210');
+  const [municipalityWard, setMunicipalityWard] = useState('Karelibaug, Vadodara, Gujarat');
+  const [wardNumber, setWardNumber] = useState('Ward 07 (Karelibaug & VIP Road)');
+  const [pincode, setPincode] = useState('390018');
+  const [bio, setBio] = useState(
+    'Civic tech enthusiast, active community validator & urban sustainability advocate.'
+  );
   const [verifiedResident, setVerifiedResident] = useState(true);
 
   // Privacy & Differential Privacy State
-  const [gpsFuzzRadius, setGpsFuzzRadius] = useState<number>(500); // meters
+  const [gpsFuzzRadius, setGpsFuzzRadius] = useState<number>(500); // 500m differential privacy
+  const [publicLeaderboard, setPublicLeaderboard] = useState<boolean>(true);
   const [exifScrubbing, setExifScrubbing] = useState<boolean>(true);
   const [facialBlurring, setFacialBlurring] = useState<boolean>(true);
-  const [publicLeaderboard, setPublicLeaderboard] = useState<boolean>(true);
-  const [aiResearchOptIn, setAiResearchOptIn] = useState<boolean>(true);
-  const [searchEngineIndexing, setSearchEngineIndexing] = useState<boolean>(false);
   const [whistleblowerMode, setWhistleblowerMode] = useState<boolean>(false);
   const [zeroKnowledgeProof, setZeroKnowledgeProof] = useState<boolean>(true);
+  const [searchEngineIndexing, setSearchEngineIndexing] = useState<boolean>(false);
+  const [aiResearchOptIn, setAiResearchOptIn] = useState<boolean>(true);
 
   // Security & Authentication State
   const [twoFactorAuth, setTwoFactorAuth] = useState<boolean>(true);
@@ -79,7 +88,7 @@ export default function SettingsPage() {
     {
       id: 'sess_1',
       device: 'MacBook Pro 16" (Sonoma)',
-      browser: 'Chrome 128.0',
+      browser: 'Chrome 128.0 (Encrypted Session)',
       location: 'Vadodara, Gujarat, India',
       ip: '103.212.144.18',
       current: true,
@@ -88,7 +97,7 @@ export default function SettingsPage() {
     {
       id: 'sess_2',
       device: 'iPhone 15 Pro Max',
-      browser: 'JaanVaani iOS App v2.4',
+      browser: 'JanVaani iOS App v2.4 (Biometric)',
       location: 'Vadodara, Gujarat, India',
       ip: '103.212.144.22',
       current: false,
@@ -111,23 +120,26 @@ export default function SettingsPage() {
   const [solutionUpvotesPush, setSolutionUpvotesPush] = useState<boolean>(true);
   const [bountyPayoutEmails, setBountyPayoutEmails] = useState<boolean>(true);
   const [weeklyCivicDigest, setWeeklyCivicDigest] = useState<boolean>(false);
+  const [quietHoursEnabled, setQuietHoursEnabled] = useState<boolean>(true);
   const [quietHoursStart, setQuietHoursStart] = useState('22:00');
   const [quietHoursEnd, setQuietHoursEnd] = useState('07:00');
 
-  // Wallet & Bounty Payouts
+  // Wallet & Bounty Payouts State
   const [upiId, setUpiId] = useState('neha.sharma@okhdfcbank');
   const [panNumber, setPanNumber] = useState('ABCPS1234F');
   const [autoRedeemPoints, setAutoRedeemPoints] = useState(true);
 
-  // Data Export state
+  // Data Export State
   const [isExporting, setIsExporting] = useState(false);
 
   const currentLangObj = getLanguageByCode(language);
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    setSavedMessage('All preferences & privacy controls synchronized across cloud nodes!');
-    setTimeout(() => setSavedMessage(null), 3500);
+    setSavedMessage(
+      'Account, Profile & Privacy preferences successfully saved and synchronized across all secure nodes!'
+    );
+    setTimeout(() => setSavedMessage(null), 4000);
   };
 
   const handleRevokeSession = (id: string) => {
@@ -144,14 +156,30 @@ export default function SettingsPage() {
           JSON.stringify(
             {
               exportDate: new Date().toISOString(),
-              compliance: 'Digital Personal Data Protection (DPDP) Act 2023 & GDPR',
-              user: { name, email, phone, location, wardNumber },
-              privacySettings: {
-                gpsFuzzRadiusMeters: gpsFuzzRadius,
-                exifScrubbing,
-                facialBlurring,
-                whistleblowerMode,
-                zeroKnowledgeProof,
+              complianceStandard: 'Digital Personal Data Protection (DPDP) Act 2023 & GDPR',
+              dataSubject: {
+                name,
+                email,
+                phone,
+                municipalityWard,
+                wardNumber,
+                pincode,
+                bio,
+                zkpResidentVerified: verifiedResident,
+              },
+              privacyConfiguration: {
+                differentialPrivacyRadiusMeters: gpsFuzzRadius,
+                publicLeaderboardVisibility: publicLeaderboard,
+                exifMetadataStripped: exifScrubbing,
+                facialNumberPlateBlurring: facialBlurring,
+                whistleblowerModeActive: whistleblowerMode,
+                zeroKnowledgeResidentProof: zeroKnowledgeProof,
+                searchEngineIndexingAllowed: searchEngineIndexing,
+              },
+              securityProfile: {
+                webAuthnPasskeysEnabled: passkeyBiometrics,
+                totpTwoFactorEnabled: twoFactorAuth,
+                activeSessionsCount: sessions.length,
               },
             },
             null,
@@ -172,7 +200,7 @@ export default function SettingsPage() {
       <LanguagePickerModal isOpen={langModalOpen} onClose={() => setLangModalOpen(false)} />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        {/* Header Title Section */}
+        {/* Top Header Title */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
           <div className="flex items-center gap-3">
             <Link
@@ -184,14 +212,14 @@ export default function SettingsPage() {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-xl sm:text-2xl font-black text-slate-950">
-                  Account, Security &amp; Privacy Hub
+                  Account &amp; Privacy Settings
                 </h1>
                 <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
                   DPDP Act 2023 Compliant
                 </span>
               </div>
               <p className="text-xs text-slate-500 mt-0.5">
-                Zero-Knowledge Privacy, Differential GPS Fuzzing, Biometric Passkeys &amp; Multi-Channel Routing.
+                Manage profile identity, location precision, differential privacy, and notification preferences.
               </p>
             </div>
           </div>
@@ -227,19 +255,6 @@ export default function SettingsPage() {
             <nav className="flex lg:flex-col gap-1.5 overflow-x-auto pb-2 lg:pb-0 scrollbar-none">
               <button
                 type="button"
-                onClick={() => setActiveTab('privacy')}
-                className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all text-left whitespace-nowrap ${
-                  activeTab === 'privacy'
-                    ? 'bg-blue-600 text-white shadow-md'
-                    : 'text-slate-700 bg-white hover:bg-slate-100 border border-slate-200/80'
-                }`}
-              >
-                <Shield className="w-4 h-4" />
-                <span>Privacy &amp; GPS Fuzzing</span>
-              </button>
-
-              <button
-                type="button"
                 onClick={() => setActiveTab('profile')}
                 className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all text-left whitespace-nowrap ${
                   activeTab === 'profile'
@@ -248,7 +263,20 @@ export default function SettingsPage() {
                 }`}
               >
                 <UserCheck className="w-4 h-4" />
-                <span>Civic Identity &amp; Ward</span>
+                <span>Profile Information</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab('privacy')}
+                className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all text-left whitespace-nowrap ${
+                  activeTab === 'privacy'
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'text-slate-700 bg-white hover:bg-slate-100 border border-slate-200/80'
+                }`}
+              >
+                <Shield className="w-4 h-4" />
+                <span>Privacy Controls</span>
               </button>
 
               <button
@@ -331,33 +359,169 @@ export default function SettingsPage() {
           {/* Right Tab Content */}
           <div className="lg:col-span-3">
             <form onSubmit={handleSave} className="space-y-6">
-              {/* TAB 1: PRIVACY & DIFFERENTIAL GPS FUZZING */}
+              {/* TAB 1: PROFILE INFORMATION */}
+              {activeTab === 'profile' && (
+                <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-card space-y-6">
+                  <div>
+                    <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                      <UserCheck className="w-5 h-5 text-blue-600" />
+                      <span>Profile Information</span>
+                    </h2>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Your civic profile identity, municipal jurisdiction, and community credentials.
+                    </p>
+                  </div>
+
+                  {/* Avatar & Verification Badge Header */}
+                  <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                    <img
+                      src={user.avatar}
+                      alt={name}
+                      className="w-16 h-16 rounded-2xl object-cover border-2 border-white shadow-sm"
+                    />
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-black text-slate-900">{name}</span>
+                        <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 flex items-center gap-1">
+                          <Check className="w-3 h-3 text-emerald-600" />
+                          <span>Verified Local Resident</span>
+                        </span>
+                      </div>
+                      <div className="text-xs text-slate-500 mt-0.5">
+                        {user.levelTitle} (Level {user.level}) • {user.points} Civic Impact Points
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Input Fields */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold uppercase text-slate-600">Full Name</label>
+                      <input
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold uppercase text-slate-600">
+                        Primary Municipality / Ward
+                      </label>
+                      <input
+                        type="text"
+                        value={municipalityWard}
+                        onChange={(e) => setMunicipalityWard(e.target.value)}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none"
+                        placeholder="e.g. Karelibaug, Vadodara, Gujarat"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold uppercase text-slate-600">
+                        Official Ward Assignment
+                      </label>
+                      <input
+                        type="text"
+                        value={wardNumber}
+                        onChange={(e) => setWardNumber(e.target.value)}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold uppercase text-slate-600">
+                        Postal Pincode
+                      </label>
+                      <input
+                        type="text"
+                        value={pincode}
+                        onChange={(e) => setPincode(e.target.value)}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold uppercase text-slate-600">
+                        Email Address (Official Verification)
+                      </label>
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold uppercase text-slate-600">
+                        Mobile Number (SMS &amp; WhatsApp Alerts)
+                      </label>
+                      <input
+                        type="text"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold uppercase text-slate-600">
+                      Bio &amp; Civic Interests
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={bio}
+                      onChange={(e) => setBio(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none"
+                      placeholder="e.g. Civic tech enthusiast, active community validator & urban sustainability advocate."
+                    />
+                  </div>
+
+                  {/* Zero-Knowledge Residency Badge */}
+                  <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200 flex items-start gap-3">
+                    <Fingerprint className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                    <div>
+                      <div className="text-xs font-bold text-emerald-950">
+                        Zero-Knowledge Resident Proof (ZKP Verified)
+                      </div>
+                      <div className="text-[11px] text-emerald-800 mt-0.5">
+                        Your residency in Karelibaug, Ward 07 was cryptographically verified via DigiLocker offline XML. No Aadhaar or personal address documents are ever stored on platform servers.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 2: PRIVACY CONTROLS */}
               {activeTab === 'privacy' && (
                 <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-card space-y-6">
                   <div>
                     <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
                       <Shield className="w-5 h-5 text-blue-600" />
-                      <span>Differential Privacy &amp; Data Anonymization</span>
+                      <span>Privacy Controls</span>
                     </h2>
                     <p className="text-xs text-slate-500 mt-0.5">
-                      Fine-grained mathematical guarantees that protect your identity when submitting civic issues.
+                      Differential privacy fuzzing, media redaction, and community visibility settings.
                     </p>
                   </div>
 
-                  {/* Differential GPS Fuzzing Slider */}
-                  <div className="p-4 rounded-2xl bg-blue-50/60 border border-blue-200/80 space-y-3">
+                  {/* 1. Anonymize GPS Coordinates in Open Research Slider */}
+                  <div className="p-5 rounded-2xl bg-blue-50/70 border border-blue-200 space-y-3">
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                        <div className="text-xs font-black text-slate-950 flex items-center gap-1.5">
                           <MapPin className="w-4 h-4 text-blue-600" />
-                          <span>GPS Location Differential Privacy Radius</span>
+                          <span>Anonymize GPS Coordinates in Open Research</span>
                         </div>
-                        <div className="text-[11px] text-slate-500 mt-0.5">
-                          Applies randomized Gaussian Laplace noise to your coordinates before public or research export.
+                        <div className="text-[11px] text-slate-600 mt-0.5">
+                          Applies {gpsFuzzRadius === 0 ? '0m' : `±${gpsFuzzRadius}m`} differential privacy fuzzing to public research exports.
                         </div>
                       </div>
-                      <span className="px-2.5 py-1 rounded-xl bg-blue-600 text-white text-xs font-extrabold shadow-xs">
-                        {gpsFuzzRadius === 0 ? 'Exact GPS (No Fuzz)' : `±${gpsFuzzRadius} Meters Fuzzed`}
+                      <span className="px-3 py-1 rounded-xl bg-blue-600 text-white text-xs font-black shadow-xs">
+                        {gpsFuzzRadius === 0 ? 'Exact GPS (0m)' : `±${gpsFuzzRadius}m Fuzzing`}
                       </span>
                     </div>
 
@@ -368,20 +532,44 @@ export default function SettingsPage() {
                       step={100}
                       value={gpsFuzzRadius}
                       onChange={(e) => setGpsFuzzRadius(Number(e.target.value))}
-                      className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                      className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
                     />
 
-                    <div className="flex justify-between text-[10px] text-slate-400 font-bold">
+                    <div className="flex justify-between text-[10px] text-slate-500 font-bold">
                       <span>0m (Precise)</span>
                       <span>250m (Neighborhood)</span>
-                      <span>500m (Recommended)</span>
+                      <span className="text-blue-700 font-extrabold">500m (Recommended)</span>
                       <span>1000m (Ward Level)</span>
                       <span>1500m (City Zone)</span>
                     </div>
                   </div>
 
-                  {/* Media Scrubbing & Privacy Toggles */}
-                  <div className="space-y-3">
+                  {/* 2. Public Profile Visibility on Leaderboard */}
+                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-start justify-between gap-4">
+                    <div className="flex items-start gap-3">
+                      <Eye className="w-5 h-5 text-purple-600 shrink-0 mt-0.5" />
+                      <div>
+                        <div className="text-xs font-black text-slate-900">
+                          Public Profile Visibility on Leaderboard
+                        </div>
+                        <div className="text-[11px] text-slate-500 mt-0.5">
+                          Show badges and civic impact score to other community members.
+                        </div>
+                      </div>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                      <input
+                        type="checkbox"
+                        checked={publicLeaderboard}
+                        onChange={(e) => setPublicLeaderboard(e.target.checked)}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600" />
+                    </label>
+                  </div>
+
+                  {/* Advanced Media & Anonymization Toggles */}
+                  <div className="space-y-3 pt-2">
                     <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
                       Automated Media &amp; Metadata Sanitization
                     </h3>
@@ -428,33 +616,13 @@ export default function SettingsPage() {
 
                     <label className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-200 cursor-pointer hover:bg-slate-100/70 transition-colors">
                       <div className="flex items-start gap-3">
-                        <Fingerprint className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                        <ShieldAlert className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
                         <div>
                           <div className="text-xs font-bold text-slate-900">
-                            Zero-Knowledge (ZKP) Resident Verification
+                            Whistleblower / High-Risk Civic Reporter Mode
                           </div>
                           <div className="text-[11px] text-slate-500">
-                            Proves you are a verified municipal ward resident without ever exposing your Aadhaar or Voter ID number.
-                          </div>
-                        </div>
-                      </div>
-                      <input
-                        type="checkbox"
-                        checked={zeroKnowledgeProof}
-                        onChange={(e) => setZeroKnowledgeProof(e.target.checked)}
-                        className="w-4 h-4 accent-blue-600 rounded"
-                      />
-                    </label>
-
-                    <label className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-200 cursor-pointer hover:bg-slate-100/70 transition-colors">
-                      <div className="flex items-start gap-3">
-                        <Sparkles className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-                        <div>
-                          <div className="text-xs font-bold text-slate-900">
-                            Whistleblower Anti-Retaliation Protocol
-                          </div>
-                          <div className="text-[11px] text-slate-500">
-                            Hides your username, timestamp hashes, and badges on sensitive municipal corruption or contractor audit reports.
+                            Submits complaints under a zero-trace pseudorandom cryptographic token (`Citizen #JV-8849`).
                           </div>
                         </div>
                       </div>
@@ -469,95 +637,6 @@ export default function SettingsPage() {
                 </div>
               )}
 
-              {/* TAB 2: PROFILE & CIVIC IDENTITY */}
-              {activeTab === 'profile' && (
-                <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-card space-y-6">
-                  <div>
-                    <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
-                      <UserCheck className="w-5 h-5 text-blue-600" />
-                      <span>Civic Profile &amp; Ward Verification</span>
-                    </h2>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      Your public citizen profile, verified ward residency, and civic reputation score.
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200">
-                    <img
-                      src={user.avatar}
-                      alt={user.name}
-                      className="w-16 h-16 rounded-2xl object-cover border-2 border-white shadow-md"
-                    />
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-black text-slate-900">{user.name}</span>
-                        {verifiedResident && (
-                          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full border border-emerald-200">
-                            <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                            Verified Citizen
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-xs text-slate-500 mt-0.5">
-                        {user.levelTitle} (Level {user.level}) • {user.points} Civic Points
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold uppercase text-slate-600">Full Name</label>
-                      <input
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold uppercase text-slate-600">Email Address</label>
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold uppercase text-slate-600">Phone (SMS Alerts)</label>
-                      <input
-                        type="text"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold uppercase text-slate-600">Assigned Ward &amp; Zone</label>
-                      <input
-                        type="text"
-                        value={wardNumber}
-                        onChange={(e) => setWardNumber(e.target.value)}
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold uppercase text-slate-600">Civic Interests &amp; Bio</label>
-                    <textarea
-                      rows={3}
-                      value={bio}
-                      onChange={(e) => setBio(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none"
-                    />
-                  </div>
-                </div>
-              )}
-
               {/* TAB 3: SECURITY, PASSKEYS & 2FA */}
               {activeTab === 'security' && (
                 <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-card space-y-6">
@@ -567,7 +646,7 @@ export default function SettingsPage() {
                       <span>Security, WebAuthn Passkeys &amp; 2FA</span>
                     </h2>
                     <p className="text-xs text-slate-500 mt-0.5">
-                      Hardware biometric login, Two-Factor Authentication, and active session management.
+                      Hardware biometric login, Two-Factor Authentication, and active session governance.
                     </p>
                   </div>
 
@@ -613,7 +692,7 @@ export default function SettingsPage() {
                     </label>
                   </div>
 
-                  {/* Active Device Sessions List */}
+                  {/* Active Device Sessions */}
                   <div className="space-y-3 pt-3 border-t border-slate-100">
                     <div className="flex items-center justify-between">
                       <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
@@ -702,10 +781,10 @@ export default function SettingsPage() {
                     <label className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-200 cursor-pointer">
                       <div>
                         <div className="text-xs font-bold text-slate-900">
-                          Ward Officer Escalation &amp; SLA Status Updates (SMS &amp; Push)
+                          Ward Grievance SLA Escalations (SMS / WhatsApp)
                         </div>
                         <div className="text-[11px] text-slate-500">
-                          Real-time alerts when your reported problem is assigned to a junior engineer or resolved by the municipality.
+                          Get real-time notification when a reported issue is assigned to an officer or solved.
                         </div>
                       </div>
                       <input
@@ -719,180 +798,187 @@ export default function SettingsPage() {
                     <label className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-200 cursor-pointer">
                       <div>
                         <div className="text-xs font-bold text-slate-900">
-                          Bounty Payout &amp; Cash Reward Disbursements
+                          Solution Co-Creation &amp; Community Upvotes
                         </div>
                         <div className="text-[11px] text-slate-500">
-                          Instant notification when your community solution wins a sponsored bounty or grant prize.
+                          Alert when an expert reviews your submitted engineering proposal.
                         </div>
                       </div>
                       <input
                         type="checkbox"
-                        checked={bountyPayoutEmails}
-                        onChange={(e) => setBountyPayoutEmails(e.target.checked)}
+                        checked={solutionUpvotesPush}
+                        onChange={(e) => setSolutionUpvotesPush(e.target.checked)}
                         className="w-4 h-4 accent-blue-600 rounded"
                       />
                     </label>
                   </div>
 
-                  {/* Quiet Hours Configuration */}
+                  {/* Quiet Hours Scheduler */}
                   <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-                    <div className="text-xs font-bold text-slate-900">
-                      Night Quiet Hours (Do Not Disturb)
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="text-[10px] font-bold uppercase text-slate-500">From</label>
-                        <input
-                          type="time"
-                          value={quietHoursStart}
-                          onChange={(e) => setQuietHoursStart(e.target.value)}
-                          className="w-full p-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800"
-                        />
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Moon className="w-4 h-4 text-slate-600" />
+                        <span className="text-xs font-bold text-slate-900">
+                          Quiet Hours (Mute Non-Emergency Alerts)
+                        </span>
                       </div>
-                      <div>
-                        <label className="text-[10px] font-bold uppercase text-slate-500">To</label>
-                        <input
-                          type="time"
-                          value={quietHoursEnd}
-                          onChange={(e) => setQuietHoursEnd(e.target.value)}
-                          className="w-full p-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800"
-                        />
-                      </div>
+                      <input
+                        type="checkbox"
+                        checked={quietHoursEnabled}
+                        onChange={(e) => setQuietHoursEnabled(e.target.checked)}
+                        className="w-4 h-4 accent-blue-600 rounded"
+                      />
                     </div>
+
+                    {quietHoursEnabled && (
+                      <div className="grid grid-cols-2 gap-3 text-xs pt-1">
+                        <div>
+                          <label className="text-[10px] font-bold text-slate-400 uppercase block">
+                            Start Time
+                          </label>
+                          <input
+                            type="time"
+                            value={quietHoursStart}
+                            onChange={(e) => setQuietHoursStart(e.target.value)}
+                            className="w-full mt-1 p-2 rounded-xl border border-slate-200 bg-white font-semibold"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-bold text-slate-400 uppercase block">
+                            End Time
+                          </label>
+                          <input
+                            type="time"
+                            value={quietHoursEnd}
+                            onChange={(e) => setQuietHoursEnd(e.target.value)}
+                            className="w-full mt-1 p-2 rounded-xl border border-slate-200 bg-white font-semibold"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
 
-              {/* TAB 5: BOUNTIES, REWARDS & UPI SETTINGS */}
+              {/* TAB 5: BOUNTY PAYOUTS & UPI */}
               {activeTab === 'bounties' && (
                 <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-card space-y-6">
                   <div>
                     <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
-                      <Wallet className="w-5 h-5 text-amber-600" />
-                      <span>Bounty Payouts, Direct UPI &amp; Civic Points</span>
+                      <Wallet className="w-5 h-5 text-blue-600" />
+                      <span>Civic Rewards &amp; Direct UPI Settlement</span>
                     </h2>
                     <p className="text-xs text-slate-500 mt-0.5">
-                      Configure direct settlement for municipal solve bounties, sponsor hackathons, and gift vouchers.
+                      Earned bounties for verified solution implementations and community validations are directly credited via NPCI UPI.
                     </p>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200 space-y-1">
+                    <div className="text-xs font-bold text-amber-950">
+                      Proof-of-Impact Verified Balance: 2,450 Civic Points (~₹2,450 Bounty Pool)
+                    </div>
+                    <div className="text-[11px] text-amber-800">
+                      Auto-settlement occurs on the 1st of every calendar month.
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold uppercase text-slate-600">
-                        Direct UPI Virtual Payment Address (VPA)
+                        Primary UPI VPA (PhonePe / GPay / Paytm / BHIM)
                       </label>
                       <input
                         type="text"
                         value={upiId}
                         onChange={(e) => setUpiId(e.target.value)}
-                        placeholder="yourname@okhdfcbank"
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none font-mono"
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none"
                       />
-                      <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-1">
-                        <CheckCircle2 className="w-3 h-3" />
-                        Verified via NPCI Real-Time Lookup
-                      </span>
                     </div>
 
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold uppercase text-slate-600">
-                        PAN Card Number (TDS Compliance on ₹10k+ Bounties)
+                        PAN Number (TDS Exemption Compliant)
                       </label>
                       <input
                         type="text"
                         value={panNumber}
-                        onChange={(e) => setPanNumber(e.target.value.toUpperCase())}
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none font-mono"
+                        onChange={(e) => setPanNumber(e.target.value)}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none uppercase"
                       />
                     </div>
                   </div>
-
-                  <label className="flex items-center justify-between p-3.5 rounded-2xl bg-amber-50/60 border border-amber-200 cursor-pointer">
-                    <div>
-                      <div className="text-xs font-bold text-amber-950">
-                        Auto-Redeem Civic Impact Points to Municipal Tax Credits
-                      </div>
-                      <div className="text-[11px] text-amber-800">
-                        Automatically converts earned JanVaani points into property tax rebates and metro passes.
-                      </div>
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked={autoRedeemPoints}
-                      onChange={(e) => setAutoRedeemPoints(e.target.checked)}
-                      className="w-4 h-4 accent-amber-600 rounded"
-                    />
-                  </label>
                 </div>
               )}
 
-              {/* TAB 6: DATA GOVERNANCE & ACCOUNT DELETION */}
+              {/* TAB 6: DATA RIGHTS & DELETION */}
               {activeTab === 'data_governance' && (
                 <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-card space-y-6">
                   <div>
                     <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
-                      <Layers className="w-5 h-5 text-rose-600" />
-                      <span>Data Portability &amp; Right to be Forgotten (DPDP 2023)</span>
+                      <Layers className="w-5 h-5 text-blue-600" />
+                      <span>Data Rights, Consent Ledger &amp; Account Erasure</span>
                     </h2>
                     <p className="text-xs text-slate-500 mt-0.5">
-                      Full control over your personal data footprint, complete data exports, and irreversible account erasure.
+                      Full control under Digital Personal Data Protection (DPDP) Act 2023.
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-                    <div className="text-xs font-bold text-slate-900">
-                      Download Full Civic History (GeoJSON / CSV / JSON)
+                  <div className="space-y-3">
+                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                      <div>
+                        <div className="text-xs font-bold text-slate-900">
+                          Complete Data Portability Package
+                        </div>
+                        <div className="text-[11px] text-slate-500">
+                          Download all your reported problems, comments, solutions, and cryptographic proofs in machine-readable JSON format.
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleExportData}
+                        disabled={isExporting}
+                        className="px-3.5 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-colors shrink-0"
+                      >
+                        {isExporting ? 'Exporting...' : 'Download JSON'}
+                      </button>
                     </div>
-                    <p className="text-[11px] text-slate-500 leading-normal">
-                      Includes all your reported issues, evidence photo hashes, validation votes, upvotes, bounty transactions, and community messages.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={handleExportData}
-                      disabled={isExporting}
-                      className="px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-slate-800 transition-colors"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      <span>Download Encrypted Archive</span>
-                    </button>
-                  </div>
 
-                  {/* Danger Zone */}
-                  <div className="p-5 rounded-2xl bg-rose-50/70 border border-rose-200 space-y-3">
-                    <div className="flex items-center gap-2 text-rose-800 font-extrabold text-xs uppercase tracking-wider">
-                      <AlertTriangle className="w-4 h-4 text-rose-600" />
-                      <span>Danger Zone: Permanent Account Purge</span>
+                    <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 flex items-center justify-between">
+                      <div>
+                        <div className="text-xs font-bold text-rose-950">
+                          Right to be Forgotten (Account Deletion &amp; Purge)
+                        </div>
+                        <div className="text-[11px] text-rose-800">
+                          Permanently delete your profile, media files, and auth credentials. Solved civic problems will remain anonymized.
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => alert('Account deletion request initiated with 14-day grace period.')}
+                        className="px-3.5 py-2 rounded-xl bg-rose-600 text-white text-xs font-bold hover:bg-rose-700 transition-colors shrink-0"
+                      >
+                        Delete Account
+                      </button>
                     </div>
-                    <p className="text-xs text-rose-900">
-                      Permanently wipes your profile, phone number, and authentication tokens. Any public reports will be cryptographically anonymized to preserve public civic safety history.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (confirm('Are you sure you want to permanently delete your JanVaani account? This action cannot be undone.')) {
-                          alert('Account scheduled for cryptographic deletion within 24 hours under DPDP Act provisions.');
-                        }
-                      }}
-                      className="px-4 py-2 bg-rose-600 text-white rounded-xl text-xs font-extrabold hover:bg-rose-700 transition-colors shadow-xs"
-                    >
-                      Permanently Delete My Account
-                    </button>
                   </div>
                 </div>
               )}
 
-              {/* Bottom Sticky Action Bar */}
-              <div className="pt-4 border-t border-slate-100 flex items-center justify-between bg-white/80 backdrop-blur-sm sticky bottom-4 p-4 rounded-2xl border shadow-lg">
-                <div className="text-xs text-slate-500 font-medium">
-                  Changes take effect immediately across all connected devices.
+              {/* Bottom Sticky Save Changes Button */}
+              <div className="p-4 bg-slate-900 text-white rounded-2xl shadow-xl flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div className="flex items-center gap-2 text-xs">
+                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                  <span className="text-slate-300">
+                    All edits are signed with SHA-256 integrity tokens.
+                  </span>
                 </div>
 
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-extrabold text-xs flex items-center gap-2 shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5"
+                  className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-black flex items-center justify-center gap-2 shadow-md transition-all hover:scale-105"
                 >
                   <Save className="w-4 h-4" />
-                  <span>Save All Settings</span>
+                  <span>Save Changes</span>
                 </button>
               </div>
             </form>
