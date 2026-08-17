@@ -53,7 +53,7 @@ export default function ExplorePage() {
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    <div className="max-w-[1600px] 2xl:max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8 space-y-6">
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -157,7 +157,7 @@ export default function ExplorePage() {
               Community & Expert Proposed Solutions ({solutions.length})
             </span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {solutions.map((sol) => (
               <SolutionCard key={sol.id} solution={sol} />
             ))}
@@ -175,7 +175,7 @@ export default function ExplorePage() {
           </div>
 
           {filteredProblems.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {filteredProblems.map((problem) => (
                 <ProblemCard key={problem.id} problem={problem} />
               ))}

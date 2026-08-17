@@ -31,7 +31,7 @@ export default function CitizenDashboardPage() {
   const mySolutions = solutions.filter((s) => s.author.id === user.id || s.author.name.includes(user.name));
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-[1600px] 2xl:max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8 space-y-8">
       {/* User Hero Banner */}
       <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-card space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">

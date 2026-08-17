@@ -8,7 +8,7 @@ export function Footer() {
     <footer className="bg-slate-950 text-white border-t border-slate-800">
       {/* Emergency Notice Ribbon */}
       <div className="bg-gradient-to-r from-red-950 via-rose-900 to-red-950 border-b border-red-800/60 py-3 px-4 sm:px-6">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left text-xs">
+        <div className="max-w-[1600px] 2xl:max-w-[1760px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left text-xs">
           <div className="flex items-center gap-2 text-rose-200">
             <ShieldAlert className="w-4 h-4 text-rose-400 shrink-0" />
             <span className="font-bold">Life-Safety Emergency Notice:</span>
@@ -25,7 +25,7 @@ export function Footer() {
       </div>
 
       {/* Main Footer Links */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8">
+      <div className="max-w-[1600px] 2xl:max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pt-12 pb-8">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
           {/* Brand Info */}
           <div className="col-span-2 space-y-4">

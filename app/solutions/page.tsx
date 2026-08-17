@@ -65,7 +65,7 @@ export default function SolutionsDirectoryPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-[1600px] 2xl:max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8 space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -82,39 +82,57 @@ export default function SolutionsDirectoryPage() {
 
         <button
           onClick={() => setIsModalOpen(true)}
-          className="self-start sm:self-auto px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-xs shadow-md transition-all flex items-center gap-2"
+          className="self-start sm:self-auto px-5 py-3 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-xs sm:text-sm shadow-md transition-all flex items-center gap-2 transform hover:-translate-y-0.5"
         >
           <PlusCircle className="w-4 h-4" />
           <span>Propose a Solution</span>
         </button>
       </div>
 
-      {/* Filter Tabs & Search */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-card flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-1 overflow-x-auto w-full md:w-auto">
-          {[
-            { id: 'all', label: 'All Solutions' },
-            { id: 'expert', label: 'Expert Vetted' },
-            { id: 'student', label: 'Student Innovations' },
-            { id: 'organization', label: 'NGO / Org' },
-            { id: 'community', label: 'Community' },
-          ].map((tab) => (
+      {/* Stats Bar */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-card">
+          <div className="text-[10px] font-bold uppercase text-slate-400">Total Solutions</div>
+          <div className="text-2xl font-black text-slate-900 font-mono mt-0.5">{solutions.length}</div>
+          <span className="text-[10px] text-purple-600 font-semibold">Across all domains</span>
+        </div>
+        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-card">
+          <div className="text-[10px] font-bold uppercase text-slate-400">AI Red-Team Verified</div>
+          <div className="text-2xl font-black text-emerald-600 font-mono mt-0.5">86%</div>
+          <span className="text-[10px] text-slate-500 font-medium">Passed stress tests</span>
+        </div>
+        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-card">
+          <div className="text-[10px] font-bold uppercase text-slate-400">Student Prototypes</div>
+          <div className="text-2xl font-black text-blue-600 font-mono mt-0.5">14</div>
+          <span className="text-[10px] text-slate-500 font-medium">Eligible for grants</span>
+        </div>
+        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-card">
+          <div className="text-[10px] font-bold uppercase text-slate-400">Pilot Implementations</div>
+          <div className="text-2xl font-black text-amber-600 font-mono mt-0.5">6</div>
+          <span className="text-[10px] text-slate-500 font-medium">Adopted by municipalities</span>
+        </div>
+      </div>
+
+      {/* Search & Filters */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          {['all', 'engineering', 'frugal', 'policy', 'student'].map((tab) => (
             <button
-              key={tab.id}
-              onClick={() => setActiveFilter(tab.id as any)}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all min-w-max ${
-                activeFilter === tab.id
+              key={tab}
+              onClick={() => setActiveFilter(tab as any)}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold capitalize transition-all ${
+                activeFilter === tab
                   ? 'bg-purple-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:bg-slate-100'
+                  : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
               }`}
             >
-              {tab.label}
+              {tab === 'all' ? 'All Solutions' : tab}
             </button>
           ))}
         </div>
 
-        <div className="relative w-full md:w-72">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+        <div className="relative w-full sm:w-72">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5" />
           <input
             type="text"
             placeholder="Search solutions..."
@@ -126,7 +144,7 @@ export default function SolutionsDirectoryPage() {
       </div>
 
       {/* Solutions Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {filtered.map((sol) => (
           <SolutionCard key={sol.id} solution={sol} />
         ))}

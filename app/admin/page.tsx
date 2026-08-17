@@ -7,7 +7,7 @@ import { ShieldCheck, Users, AlertTriangle, Sparkles, Activity, FileText, CheckC
 
 export default function AdminDashboardPage() {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-[1600px] 2xl:max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8 space-y-8">
       {/* Header */}
       <div className="bg-gradient-to-r from-slate-900 via-rose-950 to-slate-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-rose-800/40 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

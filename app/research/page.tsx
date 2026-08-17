@@ -7,7 +7,7 @@ import { Microscope, Database, Code, Lock, Download, ArrowRight, ShieldCheck } f
 
 export default function ResearchLabPage() {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-[1600px] 2xl:max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8 space-y-8">
       {/* Header */}
       <div className="bg-gradient-to-r from-slate-900 via-cyan-950 to-slate-950 text-white rounded-3xl p-6 sm:p-10 shadow-xl space-y-4 border border-cyan-800/40">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-200 text-xs font-bold border border-cyan-400/30">

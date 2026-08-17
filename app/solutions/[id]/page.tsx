@@ -28,7 +28,7 @@ export default function SolutionDetailPage() {
   if (!solution) return notFound();
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-[1400px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8 space-y-8">
       {/* Breadcrumb */}
       <div className="flex items-center justify-between text-xs text-slate-500">
         <Link href="/solutions" className="hover:text-purple-600 flex items-center gap-1 font-semibold">

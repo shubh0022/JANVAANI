@@ -6,7 +6,7 @@ import { ShieldAlert, PhoneCall, CheckCircle2, AlertTriangle, ArrowLeft } from '
 
 export default function SafetyCenterPage() {
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-[1400px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8 space-y-8">
       <div className="bg-gradient-to-r from-red-950 via-rose-900 to-red-950 text-white rounded-3xl p-6 sm:p-10 shadow-xl space-y-4 border border-red-800/40">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/20 text-red-200 text-xs font-bold border border-red-400/30">
           <ShieldAlert className="w-4 h-4 text-red-400" />

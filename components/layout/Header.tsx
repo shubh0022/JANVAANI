@@ -43,12 +43,12 @@ import { JanVaaniLogo } from '@/components/ui/JanVaaniLogo';
 
 // Navigation links configuration with responsive visibility rules
 const NAV_ITEMS = [
-  { href: '/', label: 'Home', minBreakpoint: 'xl' },
-  { href: '/explore', label: 'Explore', minBreakpoint: 'lg' },
+  { href: '/', label: 'Home', minBreakpoint: 'md' },
+  { href: '/explore', label: 'Explore', minBreakpoint: 'md' },
   { href: '/problems', label: 'Problems', minBreakpoint: 'lg' },
   { href: '/map', label: 'GIS Map', minBreakpoint: 'lg' },
   { href: '/solutions', label: 'Solutions', minBreakpoint: 'xl' },
-  { href: '/communities', label: 'Communities', minBreakpoint: 'xl' },
+  { href: '/communities', label: 'Communities', minBreakpoint: '2xl' },
 ];
 
 // Organized Hubs for the "More ▾" dropdown
@@ -242,7 +242,7 @@ export function Header() {
           </span>
         </div>
 
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="max-w-[1600px] 2xl:max-w-[1760px] mx-auto px-3 sm:px-6 lg:px-8 xl:px-10">
           <div className="flex items-center justify-between h-16 gap-2 sm:gap-4">
             {/* Slot 1: Brand Logo */}
             <div className="shrink-0 flex items-center">
